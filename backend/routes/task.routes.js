@@ -37,6 +37,7 @@ router.delete("/:id", auth, controller.deleteTask);
 const analyticsController = require("../controllers/analytics.controller");
 
 router.post("/breakdown", auth, controller.generateTaskBreakdown);
+router.post("/ai/voice", auth, controller.createTaskFromVoice);
 router.get("/analytics", auth, analyticsController.getAnalytics);
 router.get("/:id/suggestions", auth, controller.getTaskSuggestions);
 router.post("/:id/apply-suggestions", auth, controller.applyAISuggestions);
@@ -65,6 +66,10 @@ router.put("/:id/reminder-sent", auth, controller.markReminderSent);
 // Premium Actions
 router.put("/:id/pin", auth, controller.togglePinned);
 router.post("/:id/duplicate", auth, controller.duplicateTask);
+
+// Attachments
+router.post("/:id/attachments", auth, controller.uploadAttachment);
+router.delete("/:id/attachments/:attachmentId", auth, controller.deleteAttachment);
 
 module.exports = router;
 

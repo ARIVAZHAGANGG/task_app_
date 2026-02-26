@@ -12,6 +12,7 @@ console.log("Task routes imported");
 const supportRoutes = require("./routes/support.routes");
 console.log("Support routes imported");
 const activityRoutes = require("./routes/activity.routes");
+const gamificationRoutes = require("./routes/gamification.routes");
 console.log("Activity routes imported");
 const notificationRoutes = require("./routes/notification.routes");
 console.log("Notification routes imported");
@@ -52,11 +53,13 @@ app.use("/api/tasks", taskRoutes);
 app.use("/api/ai/support", supportRoutes);
 app.use("/api/activity-log", activityRoutes);
 app.use("/api/activity", activityRoutes);
+app.use("/api/gamification", gamificationRoutes);
 app.use("/api/history", activityRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/ai", require("./routes/ai.routes"));
 app.use("/api/comments", require("./routes/comment.routes"));
 app.use("/api/workspaces", require("./routes/workspace.routes"));
+app.use("/api/billing", require("./routes/billing.routes"));
 console.log("Routes set up!");
 
 

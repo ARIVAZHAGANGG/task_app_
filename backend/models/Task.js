@@ -92,7 +92,14 @@ const taskSchema = new mongoose.Schema(
     smsEnabled: {
       type: Boolean,
       default: false
-    }
+    },
+    attachments: [{
+      name: String,
+      url: String,
+      fileType: String,
+      size: Number,
+      uploadedAt: { type: Date, default: Date.now }
+    }]
   },
   { timestamps: true }
 );

@@ -11,3 +11,10 @@ frontend/.env
 backend/backend_log.txt
 backend/server_error.log
 frontend/build/
+backend/server_execution_log.txt
+backend/test_*.js
+backend/debug_*.js
+backend/debug_output.txt
+backend/list_models*.js
+.agent/
+brain/

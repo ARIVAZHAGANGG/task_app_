@@ -8,7 +8,9 @@ const notificationController = require("./notification.controller");
 const aiService = require('../services/ai.service');
 const TimeLog = require('../models/TimeLog');
 const FocusSession = require('../models/FocusSession');
-const { createRecurrence, stopRecurrence } = require('../jobs/recurrence.cron');
+// Move problematic circular dependencies to function scope to prevent startup crashes
+// const { createRecurrence, stopRecurrence } = require('../jobs/recurrence.cron');
+// const gamificationController = require('./gamification.controller');
 
 exports.createTask = async (req, res) => {
   try {
@@ -387,6 +389,10 @@ exports.updateTask = async (req, res) => {
       if (user.streak > user.longestStreak) user.longestStreak = user.streak;
 
       await user.save();
+
+      // NEW: Reward Gamification Points
+      const gamificationController = require('./gamification.controller');
+      await gamificationController.rewardPoints(req.user.id, 'task_completed');
     }
 
     const task = await Task.findOneAndUpdate(
@@ -492,6 +498,41 @@ exports.deleteTask = async (req, res) => {
   }
 };
 
+exports.createTaskFromVoice = async (req, res) => {
+  try {
+    const { transcript } = req.body;
+    if (!transcript) return res.status(400).json({ message: "Transcript is required" });
+
+    // AI parses the transcript into a task object
+    const taskData = await aiService.parseVoiceCommand(transcript);
+
+    const task = await Task.create({
+      ...taskData,
+      createdBy: req.user.id,
+      status: 'todo',
+      completed: false
+    });
+
+    // Log Activity
+    await activityController.logActivity(
+      req.user.id,
+      'task_created',
+      'Task',
+      task._id,
+      { title: task.title, method: 'voice' }
+    );
+
+    res.status(201).json({
+      success: true,
+      message: "AI created your task!",
+      data: task
+    });
+  } catch (error) {
+    console.error("Voice Task Error:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
 /* ---------------- KANBAN BOARD ---------------- */
 exports.getKanbanTasks = async (req, res) => {
   try {
@@ -575,6 +616,12 @@ exports.updateTaskStatus = async (req, res) => {
         `You've finished: "${task.title}". Great job!`,
         '/tasks'
       );
+    }
+
+    // NEW: Reward points if status is completed
+    if (status === 'completed') {
+      const gamificationController = require('./gamification.controller');
+      await gamificationController.rewardPoints(req.user.id, 'task_completed');
     }
 
     res.json(task);
@@ -920,33 +967,16 @@ exports.startPomodoroSession = async (req, res) => {
 
 exports.completePomodoroSession = async (req, res) => {
   try {
-    const session = await FocusSession.findById(req.params.sessionId);
+    const { sessionId } = req.params;
+    const gamificationController = require('./gamification.controller');
+    const session = await FocusSession.findOneAndUpdate(
+      { _id: sessionId, userId: req.user.id },
+      { completed: true, endTime: new Date(), duration: req.body.duration || 1500 },
+      { new: true }
+    );
 
-    if (!session || session.userId.toString() !== req.user.id) {
-      return res.status(404).json({ message: 'Session not found' });
-    }
-
-    session.endTime = new Date();
-    session.completed = true;
-    await session.save();
-
-    // Log time if linked to task
-    if (session.taskId) {
-      const timeLog = await TimeLog.create({
-        taskId: session.taskId,
-        userId: req.user.id,
-        startTime: session.startTime,
-        endTime: session.endTime,
-        duration: session.duration,
-        type: 'pomodoro'
-      });
-
-      // Update task actual time
-      const task = await Task.findById(session.taskId);
-      if (task) {
-        task.actualTime = (task.actualTime || 0) + Math.round(session.duration / 60);
-        await task.save();
-      }
+    if (session) {
+      await gamificationController.rewardPoints(req.user.id, 'focus_session_completed');
     }
 
     res.json(session);
@@ -993,6 +1023,7 @@ exports.createRecurringTask = async (req, res) => {
       return res.status(404).json({ message: 'Task not found' });
     }
 
+    const { createRecurrence } = require('../jobs/recurrence.cron');
     const pattern = await createRecurrence(task._id, frequency, interval, endDate);
 
     res.json({
@@ -1009,6 +1040,7 @@ exports.stopRecurringTask = async (req, res) => {
   try {
     const { recurrenceId } = req.params;
 
+    const { stopRecurrence } = require('../jobs/recurrence.cron');
     const pattern = await stopRecurrence(recurrenceId);
 
     res.json({
@@ -1081,6 +1113,35 @@ exports.removeDependency = async (req, res) => {
     task.isBlocked = incompleteDeps > 0;
     await task.save();
 
+    res.json(task);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.uploadAttachment = async (req, res) => {
+  try {
+    const { name, url, fileType, size } = req.body;
+    const task = await Task.findOneAndUpdate(
+      { _id: req.params.id, createdBy: req.user.id },
+      { $push: { attachments: { name, url, fileType, size } } },
+      { new: true }
+    );
+    if (!task) return res.status(404).json({ message: "Task not found" });
+    res.json(task);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.deleteAttachment = async (req, res) => {
+  try {
+    const task = await Task.findOneAndUpdate(
+      { _id: req.params.id, createdBy: req.user.id },
+      { $pull: { attachments: { _id: req.params.attachmentId } } },
+      { new: true }
+    );
+    if (!task) return res.status(404).json({ message: "Task not found" });
     res.json(task);
   } catch (error) {
     res.status(500).json({ message: error.message });

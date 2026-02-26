@@ -8,5 +8,7 @@ router.use(authMiddleware);
 
 router.post('/chat', supportController.handleSupportChat);
 router.get('/history', supportController.getSupportHistory);
+router.delete('/history', supportController.clearSupportHistory);
+
 
 module.exports = router;

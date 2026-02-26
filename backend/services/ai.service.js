@@ -261,6 +261,81 @@ class AIService {
         // ... (keep fallback as secondary safety)
         return "I'm here to help with ZenTask! You can ask me how to create tasks, manage your schedule, or improve your productivity score.";
     }
+    /**
+     * Parse a voice transcript into a structured task object
+     */
+    async parseVoiceCommand(transcript) {
+        try {
+            if (!this.isConfigured()) {
+                // Return basic task if AI is offline
+                return {
+                    title: transcript,
+                    priority: 'medium',
+                    category: 'Other'
+                };
+            }
+
+            const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+            const prompt = `Convert this voice command into a structured task object.
+                Command: "${transcript}"
+                Current Date: ${new Date().toISOString()}
+                
+                Respond ONLY with a JSON object. Fields:
+                - title (string, mandatory)
+                - description (string, optional)
+                - priority (low, medium, high)
+                - category (Work, Personal, Health, Urgent, Other)
+                - dueDate (ISO string if mentioned, else omit)
+                
+                Example: {"title": "Buy milk", "priority": "low", "category": "Personal"}`;
+
+            const result = await model.generateContent(prompt);
+            const response = await result.response;
+            const text = response.text();
+
+            const jsonMatch = text.match(/\{.*\}/s);
+            if (jsonMatch) {
+                return JSON.parse(jsonMatch[0]);
+            }
+            return { title: transcript, priority: 'medium', category: 'Other' };
+        } catch (error) {
+            console.error("Gemini Voice Parse Error:", error);
+            return { title: transcript, priority: 'medium', category: 'Other' };
+        }
+    }
+
+    /**
+     * Suggest an optimal reminder time for a task using AI
+     */
+    async suggestReminderTime(taskContext) {
+        try {
+            if (!this.isConfigured()) {
+                const today = new Date();
+                today.setHours(9, 0, 0, 0);
+                return today.toISOString();
+            }
+
+            const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+            const prompt = `Based on this task context, suggest the single best reminder time.
+                Task: "${taskContext.title}"
+                Priority: ${taskContext.priority}
+                Due Date: ${taskContext.dueDate || 'Not set'}
+                Current Time: ${new Date().toISOString()}
+                
+                Respond ONLY with the ISO date string for the reminder. 
+                Choose a time during business hours (9AM-6PM) unless the task seems urgent.`;
+
+            const result = await model.generateContent(prompt);
+            const response = await result.response;
+            const text = response.text().trim();
+
+            const dateMatch = text.match(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z/);
+            return dateMatch ? dateMatch[0] : new Date().toISOString();
+        } catch (error) {
+            console.error("Gemini Reminder Suggest Error:", error);
+            return new Date().toISOString();
+        }
+    }
 }
 
 module.exports = new AIService();

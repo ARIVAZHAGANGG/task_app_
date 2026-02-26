@@ -19,7 +19,13 @@ exports.handleSupportChat = async (req, res) => {
         await userMsg.save();
 
         // Get AI response
-        const aiResponse = await aiService.getChatResponse(userId, message);
+        let aiResponse;
+        try {
+            aiResponse = await aiService.getChatResponse(userId, message);
+        } catch (error) {
+            console.error('❌ AI Service Error:', error);
+            aiResponse = "I'm currently having trouble connecting to my brain! 🧠 But I'm still here to help with your tasks. What can I do for you?";
+        }
 
         // Save AI message
         const aiMsg = new SupportMessage({
@@ -32,13 +38,12 @@ exports.handleSupportChat = async (req, res) => {
 
         res.status(200).json({
             success: true,
-            message: aiResponse, // Standardized key
+            message: aiResponse,
             history: [userMsg, aiMsg]
         });
     } catch (error) {
-        console.error('❌ Support Chat Error:', error);
-        console.error('❌ Error Stack:', error.stack);
-        res.status(500).json({ success: false, message: 'Failed to process support request', error: error.message });
+        console.error('❌ Support Chat Controller Error:', error);
+        res.status(500).json({ success: false, message: 'Failed to process support request' });
     }
 };
 
@@ -59,5 +64,22 @@ exports.getSupportHistory = async (req, res) => {
     } catch (error) {
         console.error('Support History Error:', error);
         res.status(500).json({ success: false, message: 'Failed to fetch support history' });
+    }
+};
+/**
+ * Clear support chat history
+ */
+exports.clearSupportHistory = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        await SupportMessage.deleteMany({ userId });
+
+        res.status(200).json({
+            success: true,
+            message: 'Chat history cleared successfully'
+        });
+    } catch (error) {
+        console.error('Clear Support History Error:', error);
+        res.status(500).json({ success: false, message: 'Failed to clear chat history' });
     }
 };

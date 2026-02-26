@@ -106,3 +106,18 @@ exports.getProductivityScore = async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 };
+const aiService = require("../services/ai.service");
+
+/**
+ * Suggest an optimal reminder time
+ * POST /api/ai/suggest-reminder
+ */
+exports.suggestReminder = async (req, res) => {
+    try {
+        const { title, priority, dueDate } = req.body;
+        const reminderDate = await aiService.suggestReminderTime({ title, priority, dueDate });
+        res.json({ success: true, reminderDate });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
