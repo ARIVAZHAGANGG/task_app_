@@ -119,7 +119,7 @@ const Pomodoro = ({ taskId = null }) => {
     const progressPercentage = ((TIME_PRESETS[mode] - time) / TIME_PRESETS[mode]) * 100;
 
     return (
-        <div className="bg-gradient-to-br from-primary-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 p-8 rounded-3xl shadow-xl">
+        <div className="bg-gradient-to-br from-primary-50 to-blue-50 dark:from-gray-800 dark:to-gray-900 p-8 rounded-3xl shadow-xl">
             <div className="max-w-md mx-auto">
                 {/* Header */}
                 <div className="text-center mb-6">

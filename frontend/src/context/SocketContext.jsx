@@ -20,7 +20,10 @@ export const SocketProvider = ({ children }) => {
 
             activeSocket = io(socketUrl, {
                 withCredentials: true,
-                transports: ['polling', 'websocket'] // Favor polling first to establish connection quickly
+                transports: ['websocket', 'polling'], // Prioritize websocket for stability and single connection
+                forceNew: false, // Ensure we try to reuse existing connection
+                reconnection: true,
+                reconnectionAttempts: 5
             });
 
             activeSocket.on('connect', () => {

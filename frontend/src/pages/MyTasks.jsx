@@ -98,8 +98,13 @@ const MyTasks = () => {
                 const updatedTask = res.data.data || res.data;
                 setTasks(prev => prev.map(t => (t.id || t._id) === taskId ? updatedTask : t));
                 toast.success("Task updated successfully");
+            } else if (Array.isArray(taskData)) {
+                // Bulk Create
+                await Promise.all(taskData.map(data => api.post("/tasks", data)));
+                toast.success(`${taskData.length} tasks registered!`);
+                fetchTasks();
             } else {
-                // Create
+                // Single Create
                 const res = await api.post('/tasks', taskData);
                 const newTask = res.data.data || res.data;
                 setTasks(prev => [newTask, ...prev]);

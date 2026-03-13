@@ -84,7 +84,7 @@ const AttachmentZone = ({ taskId, attachments = [], onUpdate }) => {
                             className="flex items-center justify-between p-3 bg-white dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 rounded-xl group transition-all hover:shadow-md"
                         >
                             <div className="flex items-center gap-3 min-w-0">
-                                <div className="p-2 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-lg shrink-0">
+                                <div className="p-2 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-lg shrink-0">
                                     {getFileIcon(file.fileType)}
                                 </div>
                                 <div className="min-w-0">
@@ -96,7 +96,7 @@ const AttachmentZone = ({ taskId, attachments = [], onUpdate }) => {
                                 <a
                                     href={file.url}
                                     download={file.name}
-                                    className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/40 rounded-lg transition-all"
+                                    className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/40 rounded-lg transition-all"
                                 >
                                     <Download size={14} />
                                 </a>

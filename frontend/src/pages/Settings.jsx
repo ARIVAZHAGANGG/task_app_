@@ -186,10 +186,10 @@ const Settings = () => {
                             {activeTab === "profile" && (
                                 <div className="space-y-6">
                                     <div className="bg-white dark:bg-slate-900 p-8 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden">
-                                        <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 blur-[50px] rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+                                        <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 blur-[50px] rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none" />
 
                                         <div className="flex flex-col md:flex-row gap-8 items-start relative z-10">
-                                            <div className="w-24 h-24 rounded-3xl bg-indigo-50 dark:bg-indigo-900/20 flex items-center justify-center text-indigo-600 border border-indigo-100 dark:border-indigo-800/50 shadow-inner">
+                                            <div className="w-24 h-24 rounded-3xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-blue-600 border border-blue-100 dark:border-blue-800/50 shadow-inner">
                                                 <User size={48} strokeWidth={1.5} />
                                             </div>
 
@@ -248,7 +248,7 @@ const Settings = () => {
                                     <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
                                         <div className="flex items-center justify-between mb-6">
                                             <h2 className="text-xl font-bold text-slate-900 dark:text-white">Recent Activity</h2>
-                                            <button onClick={fetchActivities} className="text-xs font-bold text-indigo-600 uppercase hover:underline">Refresh</button>
+                                            <button onClick={fetchActivities} className="text-xs font-bold text-blue-600 uppercase hover:underline">Refresh</button>
                                         </div>
 
                                         {logsLoading ? (
@@ -264,7 +264,7 @@ const Settings = () => {
                                                         </div>
                                                         <div className="flex-1 min-w-0">
                                                             <p className="text-sm font-bold text-slate-800 dark:text-slate-200">
-                                                                <span className="text-indigo-600 dark:text-indigo-400 font-black uppercase text-[10px] mr-2 tracking-wider">{log.action || 'ACTION'}</span>
+                                                                <span className="text-blue-600 dark:text-blue-400 font-black uppercase text-[10px] mr-2 tracking-wider">{log.action || 'ACTION'}</span>
                                                                 {log.message || `${log.action} ${log.targetType}`}
                                                             </p>
                                                             <div className="flex items-center gap-2 mt-1">
@@ -286,7 +286,7 @@ const Settings = () => {
 
                             {activeTab === "history" && (
                                 <div className="space-y-6">
-                                    <div className="bg-white dark:bg-slate-900 p-8 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm shadow-indigo-500/5">
+                                    <div className="bg-white dark:bg-slate-900 p-8 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm shadow-blue-500/5">
                                         <div className="flex items-center justify-between mb-8">
                                             <div>
                                                 <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Master Timeline</h2>
@@ -296,13 +296,13 @@ const Settings = () => {
 
                                         {logsLoading ? (
                                             <div className="flex justify-center p-12">
-                                                <div className="w-8 h-8 border-4 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin"></div>
+                                                <div className="w-8 h-8 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin"></div>
                                             </div>
                                         ) : history.length > 0 ? (
                                             <div className="relative pl-8 space-y-8 before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-100 dark:before:bg-slate-800">
                                                 {history.map((item, idx) => (
                                                     <div key={item._id} className="relative group">
-                                                        <div className="absolute -left-[27px] top-1.5 w-4 h-4 rounded-full border-4 border-white dark:border-slate-900 bg-indigo-500 z-10 group-hover:scale-125 transition-transform"></div>
+                                                        <div className="absolute -left-[27px] top-1.5 w-4 h-4 rounded-full border-4 border-white dark:border-slate-900 bg-blue-500 z-10 group-hover:scale-125 transition-transform"></div>
                                                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-1">
                                                             <p className="text-xs font-black text-slate-400 uppercase tracking-widest">
                                                                 {new Date(item.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
@@ -311,13 +311,13 @@ const Settings = () => {
                                                                 {new Date(item.createdAt).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
                                                             </span>
                                                         </div>
-                                                        <div className="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-800 hover:border-indigo-100 dark:hover:border-indigo-900/30 transition-all hover:shadow-lg hover:shadow-indigo-500/5 group-hover:-translate-y-0.5">
+                                                        <div className="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-800 hover:border-blue-100 dark:hover:border-blue-900/30 transition-all hover:shadow-lg hover:shadow-blue-500/5 group-hover:-translate-y-0.5">
                                                             <div className="flex items-center gap-3">
                                                                 <div className={cn(
                                                                     "p-2 rounded-xl text-white",
                                                                     item.action?.includes('delete') ? "bg-red-500" :
                                                                         item.action?.includes('complete') ? "bg-green-500" :
-                                                                            "bg-indigo-500"
+                                                                            "bg-blue-500"
                                                                 )}>
                                                                     {item.action?.includes('complete') ? <Check size={14} strokeWidth={4} /> :
                                                                         item.action?.includes('delete') ? <Trash2 size={14} /> : <ListTodo size={14} />}
@@ -343,7 +343,7 @@ const Settings = () => {
                             {activeTab === "security" && (
                                 <div className="space-y-6">
                                     <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-                                        <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-6 font-black tracking-tight uppercase text-xs text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20 px-3 py-1 rounded-full w-fit">Authentication System</h2>
+                                        <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-6 font-black tracking-tight uppercase text-xs text-blue-600 bg-blue-50 dark:bg-blue-900/20 px-3 py-1 rounded-full w-fit">Authentication System</h2>
                                         <form onSubmit={handlePasswordUpdate} className="space-y-5">
                                             <div className="grid gap-2">
                                                 <label className="text-xs font-black text-slate-500 uppercase tracking-widest">Current Authorization Key</label>
@@ -418,13 +418,13 @@ const Settings = () => {
                                                     className={cn(
                                                         "p-6 rounded-2xl border-2 transition-all flex flex-col items-center gap-4 group",
                                                         theme === id
-                                                            ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400"
-                                                            : "border-slate-100 dark:border-slate-800 hover:border-indigo-200 dark:hover:border-indigo-900/30"
+                                                            ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
+                                                            : "border-slate-100 dark:border-slate-800 hover:border-blue-200 dark:hover:border-blue-900/30"
                                                     )}
                                                 >
                                                     <div className={cn(
                                                         "w-12 h-12 rounded-xl flex items-center justify-center transition-all",
-                                                        theme === id ? "bg-indigo-500 text-white shadow-lg shadow-indigo-500/20" : "bg-slate-50 dark:bg-slate-800 text-slate-400 group-hover:text-indigo-500"
+                                                        theme === id ? "bg-blue-500 text-white shadow-lg shadow-blue-500/20" : "bg-slate-50 dark:bg-slate-800 text-slate-400 group-hover:text-blue-500"
                                                     )}>
                                                         <Icon size={24} />
                                                     </div>
@@ -437,7 +437,7 @@ const Settings = () => {
                                     <div className="grid md:grid-cols-2 gap-6">
                                         <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between">
                                             <div className="flex items-center gap-4">
-                                                <div className="p-3 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl text-indigo-600">
+                                                <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl text-blue-600">
                                                     <Bell size={20} strokeWidth={3} />
                                                 </div>
                                                 <div>
@@ -449,7 +449,7 @@ const Settings = () => {
                                                 onClick={() => handlePreferenceUpdate("pushNotifications")}
                                                 className={cn(
                                                     "w-12 h-6 rounded-full relative transition-all duration-500 px-1",
-                                                    preferences.pushNotifications ? "bg-indigo-500" : "bg-slate-200 dark:bg-slate-700"
+                                                    preferences.pushNotifications ? "bg-blue-500" : "bg-slate-200 dark:bg-slate-700"
                                                 )}
                                             >
                                                 <div className={cn(

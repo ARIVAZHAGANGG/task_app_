@@ -31,8 +31,8 @@ const AnalyticsCharts = ({ weeklyData, priorityData, trendData }) => {
                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Output Analysis</p>
                     </div>
                 </div>
-                <div className="h-72 w-full">
-                    <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+                <div className="h-72 w-full relative">
+                    <ResponsiveContainer width="100%" height="100%" debounce={50}>
                         <BarChart data={weeklyData}>
                             <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="var(--border-color)" opacity={0.5} />
                             <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "var(--text-tertiary)", fontWeight: 700 }} />
@@ -74,8 +74,8 @@ const AnalyticsCharts = ({ weeklyData, priorityData, trendData }) => {
                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Consistency Metric</p>
                     </div>
                 </div>
-                <div className="h-72 w-full">
-                    <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+                <div className="h-72 w-full relative">
+                    <ResponsiveContainer width="100%" height="100%" debounce={50}>
                         <LineChart data={trendData}>
                             <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="var(--border-color)" opacity={0.5} />
                             <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "var(--text-tertiary)", fontWeight: 700 }} />
@@ -116,8 +116,8 @@ const AnalyticsCharts = ({ weeklyData, priorityData, trendData }) => {
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Resource Allocation</p>
                 </div>
                 <div className="flex flex-col md:flex-row items-center justify-around mt-6" style={{ height: 320 }}>
-                    <div className="h-full w-full md:w-1/2">
-                        <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+                    <div className="h-full w-full md:w-1/2 relative">
+                        <ResponsiveContainer width="100%" height="100%" debounce={50}>
                             <PieChart>
                                 <Pie
                                     data={priorityData}

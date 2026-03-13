@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { getProductivityScore, suggestReminder } = require("../controllers/ai.controller");
+const { getProductivityScore, suggestReminder, handleVoiceCommand } = require("../controllers/ai.controller");
 const { handleSupportChat } = require("../controllers/support.controller");
 const authMiddleware = require("../middleware/auth.middleware");
 
@@ -12,5 +12,8 @@ router.post("/chat", authMiddleware, handleSupportChat);
 
 // POST /api/ai/suggest-reminder
 router.post("/suggest-reminder", authMiddleware, suggestReminder);
+
+// POST /api/ai/voice-command
+router.post("/voice-command", authMiddleware, handleVoiceCommand);
 
 module.exports = router;

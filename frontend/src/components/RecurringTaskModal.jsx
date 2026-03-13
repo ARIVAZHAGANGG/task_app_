@@ -54,7 +54,7 @@ const RecurringTaskModal = ({ isOpen, onClose, task, onSuccess }) => {
                 </div>
 
                 {/* Task Info */}
-                <div className="bg-gradient-to-r from-primary-50 to-indigo-50 dark:from-gray-700 dark:to-gray-750 p-4 rounded-xl mb-6">
+                <div className="bg-gradient-to-r from-primary-50 to-blue-50 dark:from-gray-700 dark:to-gray-750 p-4 rounded-xl mb-6">
                     <div className="font-semibold text-gray-800 dark:text-white">{task?.title}</div>
                     <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                         This task will be automatically recreated based on the schedule below

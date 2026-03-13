@@ -48,14 +48,14 @@ const Arcade = () => {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
                 {/* Game Area */}
                 <div className="lg:col-span-2 saas-card p-12 bg-slate-900 border-none relative overflow-hidden group min-h-[600px] flex flex-col items-center justify-center">
-                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 animate-shimmer" />
+                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-sky-500 to-blue-500 animate-shimmer" />
 
                     <div className="relative z-10 w-full">
                         <div className="flex items-center justify-between mb-8">
-                            <div className="flex items-center gap-3 text-indigo-400">
+                            <div className="flex items-center gap-3 text-blue-400">
                                 <h3 className="text-2xl font-black text-white">{games.find(g => g.id === activeGame).name}</h3>
                             </div>
-                            <div className="flex items-center gap-2 px-3 py-1 bg-white/5 rounded-full text-[10px] font-black text-indigo-300 uppercase tracking-widest">
+                            <div className="flex items-center gap-2 px-3 py-1 bg-white/5 rounded-full text-[10px] font-black text-blue-300 uppercase tracking-widest">
                                 <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
                                 LIVE XP
                             </div>
@@ -67,20 +67,20 @@ const Arcade = () => {
 
                 {/* Sidebar Info */}
                 <div className="space-y-8">
-                    <div className="saas-card p-8 space-y-6 border-indigo-500/10 bg-indigo-500/5">
-                        <div className="flex items-center gap-3 text-indigo-600">
+                    <div className="saas-card p-8 space-y-6 border-blue-500/10 bg-blue-500/5">
+                        <div className="flex items-center gap-3 text-blue-600">
                             <Sparkles size={20} />
                             <h4 className="font-black uppercase tracking-widest text-sm">Game Insights</h4>
                         </div>
                         <p className="text-slate-600 dark:text-slate-400 text-sm font-medium leading-relaxed">
-                            {games.find(g => g.id === activeGame).description} These games are designed to train your <span className="text-indigo-600 font-bold">visual reflexes</span> and <span className="text-indigo-600 font-bold">pattern recognition</span>.
+                            {games.find(g => g.id === activeGame).description} These games are designed to train your <span className="text-blue-600 font-bold">visual reflexes</span> and <span className="text-blue-600 font-bold">pattern recognition</span>.
                         </p>
 
                         <div className="pt-4 p-4 bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700">
                             <h5 className="text-[10px] font-black uppercase text-slate-400 mb-3 tracking-widest">Global Payout</h5>
                             <div className="flex items-center justify-between">
                                 <span className="font-bold text-sm">Reward Rate</span>
-                                <span className="text-indigo-600 font-black">10% Score to XP</span>
+                                <span className="text-blue-600 font-black">10% Score to XP</span>
                             </div>
                         </div>
                     </div>

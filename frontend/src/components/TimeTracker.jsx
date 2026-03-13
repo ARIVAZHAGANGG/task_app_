@@ -91,10 +91,10 @@ const TimeTracker = ({ taskId, taskTitle }) => {
     return (
         <div className="space-y-4">
             {/* Timer Controls */}
-            <div className="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-gray-800 dark:to-gray-850 p-4 rounded-xl">
+            <div className="bg-gradient-to-r from-blue-50 to-sky-50 dark:from-gray-800 dark:to-gray-850 p-4 rounded-xl">
                 <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
-                        <Clock className="text-indigo-600" size={20} />
+                        <Clock className="text-blue-600" size={20} />
                         <h4 className="font-semibold text-gray-800 dark:text-white">Time Tracker</h4>
                     </div>
                     {totalMinutes > 0 && (
@@ -120,7 +120,7 @@ const TimeTracker = ({ taskId, taskTitle }) => {
                         onClick={isTracking ? stopTimer : startTimer}
                         className={`px-6 py-4 rounded-lg font-semibold flex items-center gap-2 transition-all ${isTracking
                             ? 'bg-red-500 hover:bg-red-600 text-white'
-                            : 'bg-indigo-600 hover:bg-indigo-700 text-white'
+                            : 'bg-blue-600 hover:bg-blue-700 text-white'
                             }`}
                     >
                         {isTracking ? (
@@ -157,10 +157,10 @@ const TimeTracker = ({ taskId, taskTitle }) => {
                                         {new Date(log.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                     </div>
                                     {log.type === 'pomodoro' && (
-                                        <div className="text-xs text-purple-600 dark:text-purple-400">🍅 Pomodoro</div>
+                                        <div className="text-xs text-sky-600 dark:text-sky-400">🍅 Pomodoro</div>
                                     )}
                                 </div>
-                                <div className="font-semibold text-indigo-600">
+                                <div className="font-semibold text-blue-600">
                                     {log.durationMinutes}min
                                 </div>
                             </div>

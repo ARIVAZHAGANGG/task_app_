@@ -109,7 +109,7 @@ const WhackADistraction = () => {
                                         initial={{ y: 100 }}
                                         animate={{ y: 0 }}
                                         exit={{ y: 100 }}
-                                        className="absolute inset-0 bg-indigo-500 flex items-center justify-center text-white"
+                                        className="absolute inset-0 bg-blue-500 flex items-center justify-center text-white"
                                     >
                                         <AlertCircle size={40} className="animate-pulse" />
                                     </motion.div>
@@ -134,7 +134,7 @@ const WhackADistraction = () => {
                                 <p className="text-slate-400 text-sm font-bold">Whack the blue distraction orbs!</p>
                                 <button
                                     onClick={gameOver ? reset : () => setIsPaused(false)}
-                                    className="px-10 py-4 bg-indigo-600 text-white font-black rounded-2xl"
+                                    className="px-10 py-4 bg-blue-600 text-white font-black rounded-2xl"
                                 >
                                     {gameOver ? 'RETRY' : 'BEGIN'}
                                 </button>

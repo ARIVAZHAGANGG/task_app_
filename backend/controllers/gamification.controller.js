@@ -3,6 +3,8 @@ const Achievement = require('../models/Achievement');
 const Task = require('../models/Task');
 const notificationController = require('./notification.controller');
 const PDFDocument = require('pdfkit');
+const path = require('path');
+const fs = require('fs');
 
 /**
  * Reward logic constants
@@ -103,12 +105,13 @@ exports.getStats = async (req, res) => {
         const nextLevelXP = Math.pow(user.level, 2) * 100;
         const xpInCurrentLevel = user.points - currentLevelStartXP;
         const xpRequiredForNextLevel = nextLevelXP - currentLevelStartXP;
-        const progressPercentage = Math.min(100, Math.max(0, (xpInCurrentLevel / xpRequiredForNextLevel) * 100));
+        const totalTasks = await Task.countDocuments({ createdBy: req.user.id });
 
         res.json({
             level: user.level,
             points: user.points,
             totalTasksDone: user.totalTasksDone,
+            totalTasks: totalTasks,
             streak: user.streak,
             longestStreak: user.longestStreak,
             progress: {
@@ -167,14 +170,53 @@ exports.downloadReport = async (req, res) => {
         res.setHeader('Content-disposition', 'attachment; filename="' + filename + '"');
         res.setHeader('Content-type', 'application/pdf');
 
-        doc.pipe(res);
+        doc.pipe(res);        // Header - Logo (single centered logo)
+        const logoPathSeal = path.join(__dirname, '../assets/bait_logo.png');
+        const pageWidth = doc.page.width;
+        const logoY = 40;
 
-        // Header
-        doc.fillColor('#4f46e5').fontSize(25).text('ZenTask', { align: 'center' });
-        doc.fillColor('#1e293b').fontSize(18).text('Productivity Intelligence Report', { align: 'center' });
-        doc.moveDown();
-        doc.fillColor('#64748b').fontSize(10).text(`Generated on: ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}`, { align: 'center' });
-        doc.moveDown(2);
+        if (fs.existsSync(logoPathSeal)) {
+            const logoYPosition = logoY + 50;
+            
+            // Center Circle (Seal)
+            doc.save()
+               .circle(pageWidth / 2, logoYPosition, 60)
+               .fillAndStroke('white', '#e2e8f0')
+               .restore();
+
+            // Draw logo centered
+            doc.image(logoPathSeal, (pageWidth / 2) - 50, logoY, { width: 100, height: 100 });
+
+            // Academic Header Text
+            doc.y = logoY + 115;
+            doc.fillColor('#1e293b')
+               .fontSize(16)
+               .font('Helvetica-Bold')
+               .text('BANNARI AMMAN INSTITUTE OF TECHNOLOGY', { align: 'center' });
+            
+            doc.moveDown(0.2);
+            doc.fillColor('#64748b')
+               .fontSize(10)
+               .font('Helvetica')
+               .text('An Autonomous Institution | Accredited by NAAC with A+ Grade', { align: 'center' });
+            
+            doc.moveDown(1.5);
+            doc.fillColor('#0f172a')
+               .fontSize(24)
+               .font('Helvetica-Bold')
+               .text('PRODUCTIVITY REPORT', { align: 'center', characterSpacing: 1 });
+            
+            doc.moveDown(0.5);
+            doc.fillColor('#64748b')
+               .fontSize(10)
+               .font('Helvetica')
+               .text(`Date of Emission: ${new Date().toLocaleDateString()} | Time: ${new Date().toLocaleTimeString()}`, { align: 'center' });
+            
+            // Decorative line
+            doc.moveDown(1);
+            doc.moveTo(100, doc.y).lineTo(pageWidth - 100, doc.y).lineWidth(1).stroke('#e2e8f0');
+            doc.moveDown(2);
+        }
 
         // User Identity
         doc.fillColor('#1e293b').fontSize(14).text('COMMANDER IDENTITY', { tracking: 2 });
@@ -192,12 +234,13 @@ exports.downloadReport = async (req, res) => {
         doc.moveDown();
 
         doc.fontSize(12).fillColor('#334155');
-        const score = (user.level * 15 + 65) % 100;
+        const totalTasksFull = await Task.countDocuments({ createdBy: req.user.id });
+        const productivityScore = totalTasksFull > 0 ? Math.round((user.totalTasksDone / totalTasksFull) * 100) : 0;
 
         doc.text(`Current Rank: Level ${user.level}`);
         doc.text(`Total Experience points (XP): ${user.points}`);
         doc.text(`Combat Streak: ${user.streak} Days`);
-        doc.text(`Mission Success Rate: ${score}% (Elite)`);
+        doc.text(`Mission Success Rate: ${productivityScore}%`);
         doc.text(`Total Tasks Neutralized: ${user.totalTasksDone}`);
         doc.moveDown(2);
 
@@ -209,7 +252,10 @@ exports.downloadReport = async (req, res) => {
         if (tasks.length > 0) {
             tasks.forEach((task, index) => {
                 doc.fontSize(11).fillColor('#475569').text(`${index + 1}. ${task.title}`);
-                doc.fontSize(9).fillColor('#94a3b8').text(`   Success confirmed on: ${new Date(task.updatedAt).toLocaleDateString()}`);
+                const completedAt = new Date(task.completedAt || task.updatedAt);
+                const completedStr = completedAt.toLocaleDateString() + ', ' + completedAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                doc.fontSize(9).fillColor('#94a3b8').text(`   Success confirmed on: ${completedStr}`);
+
                 doc.moveDown(0.5);
             });
         } else {

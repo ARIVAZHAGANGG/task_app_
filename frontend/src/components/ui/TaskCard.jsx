@@ -85,7 +85,7 @@ const TaskCard = ({
                             "mt-1 w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all duration-300 shrink-0",
                             completed
                                 ? "bg-green-500 border-green-500 text-white shadow-lg shadow-green-500/20"
-                                : "border-slate-200 dark:border-slate-700 hover:border-indigo-500 dark:hover:border-indigo-400"
+                                : "border-slate-200 dark:border-slate-700 hover:border-blue-500 dark:hover:border-blue-400"
                         )}
                     >
                         {completed && <Check size={14} strokeWidth={4} />}
@@ -137,7 +137,7 @@ const TaskCard = ({
                             )}
 
                             {category && (
-                                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 text-[10px] font-black uppercase tracking-wider border border-indigo-100 dark:border-indigo-900/30">
+                                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-[10px] font-black uppercase tracking-wider border border-blue-100 dark:border-blue-900/30">
                                     <Tag size={12} strokeWidth={3} />
                                     {category}
                                 </div>

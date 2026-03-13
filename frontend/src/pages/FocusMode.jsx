@@ -21,12 +21,12 @@ const FocusMode = () => {
                 </div>
 
                 <div className="lg:col-span-4 space-y-6">
-                    <div className="bg-indigo-600 rounded-3xl p-6 text-white shadow-xl shadow-indigo-600/20">
+                    <div className="bg-blue-600 rounded-3xl p-6 text-white shadow-xl shadow-blue-600/20">
                         <div className="flex items-center gap-2 mb-4">
                             <Info size={20} strokeWidth={2.5} />
                             <h3 className="font-black uppercase tracking-widest text-xs">AI Protocol</h3>
                         </div>
-                        <p className="text-indigo-100 font-bold text-sm leading-relaxed">
+                        <p className="text-blue-100 font-bold text-sm leading-relaxed">
                             Focus for 25 minutes, then rest for 5. Complete 4 sessions for a major XP bonus!
                         </p>
                     </div>
@@ -35,15 +35,15 @@ const FocusMode = () => {
                         <h3 className="font-bold text-slate-800 dark:text-white mb-4">Benefits</h3>
                         <ul className="space-y-3 text-sm text-slate-500 dark:text-slate-400 font-bold">
                             <li className="flex items-center gap-2">
-                                <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full" />
+                                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full" />
                                 Eliminates distractions
                             </li>
                             <li className="flex items-center gap-2">
-                                <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full" />
+                                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full" />
                                 Boosts mental clarity
                             </li>
                             <li className="flex items-center gap-2">
-                                <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full" />
+                                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full" />
                                 Prevents burnout
                             </li>
                         </ul>

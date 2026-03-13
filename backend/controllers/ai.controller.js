@@ -121,3 +121,22 @@ exports.suggestReminder = async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 };
+
+/**
+ * Handle voice command transcription and parsing
+ * POST /api/ai/voice-command
+ */
+exports.handleVoiceCommand = async (req, res) => {
+    try {
+        const { transcript } = req.body;
+        if (!transcript) {
+            return res.status(400).json({ success: false, message: "No transcript provided" });
+        }
+        
+        const taskData = await aiService.parseVoiceCommand(transcript);
+        res.json({ success: true, task: taskData });
+    } catch (error) {
+        console.error("Voice Command Error:", error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+};

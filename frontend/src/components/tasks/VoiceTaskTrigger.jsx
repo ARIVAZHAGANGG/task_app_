@@ -76,7 +76,7 @@ const VoiceTaskTrigger = ({ onTaskCreated }) => {
                         initial={{ opacity: 0, scale: 0.8, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.8, y: 20 }}
-                        className="absolute bottom-20 right-0 bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-2xl border border-indigo-100 dark:border-slate-700 w-64"
+                        className="absolute bottom-20 right-0 bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-2xl border border-blue-100 dark:border-slate-700 w-64"
                     >
                         <div className="flex items-center gap-3">
                             <div className="relative">
@@ -97,7 +97,7 @@ const VoiceTaskTrigger = ({ onTaskCreated }) => {
                 disabled={isProcessing}
                 className={`w-16 h-16 rounded-full flex items-center justify-center shadow-2xl transition-all duration-300 ${isListening
                         ? 'bg-red-500 text-white animate-pulse'
-                        : 'saas-gradient text-white hover:shadow-indigo-500/40'
+                        : 'saas-gradient text-white hover:shadow-blue-500/40'
                     }`}
             >
                 {isProcessing ? (

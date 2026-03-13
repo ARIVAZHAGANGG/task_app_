@@ -39,7 +39,7 @@ const AIInsightsCard = () => {
             <div className="saas-card p-12 flex flex-col items-center justify-center gap-4 min-h-[300px]">
                 <div className="relative w-12 h-12">
                     <div className="absolute inset-0 rounded-full border-4 border-slate-100 dark:border-slate-800" />
-                    <div className="absolute inset-0 rounded-full border-4 border-indigo-500 border-t-transparent animate-spin" />
+                    <div className="absolute inset-0 rounded-full border-4 border-blue-500 border-t-transparent animate-spin" />
                 </div>
                 <p className="text-slate-500 font-bold animate-pulse uppercase tracking-[0.2em] text-[10px]">Processing Analysis...</p>
             </div>
@@ -50,19 +50,19 @@ const AIInsightsCard = () => {
         <div className="saas-card overflow-hidden group">
             <div className="p-8 relative">
                 {/* Background Sparkle Effect */}
-                <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/5 dark:bg-indigo-500/10 rounded-full blur-[80px] -mr-48 -mt-48 transition-colors duration-700" />
+                <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/5 dark:bg-blue-500/10 rounded-full blur-[80px] -mr-48 -mt-48 transition-colors duration-700" />
 
                 <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-10">
                     {/* Left Section: Core Message */}
                     <div className="lg:col-span-4 flex flex-col justify-between">
                         <div>
                             <div className="flex items-center gap-3 mb-6">
-                                <div className="w-12 h-12 saas-gradient rounded-2xl flex items-center justify-center text-white shadow-lg shadow-indigo-500/20">
+                                <div className="w-12 h-12 saas-gradient rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
                                     <Sparkles size={22} />
                                 </div>
                                 <div>
                                     <h2 className="text-lg font-bold text-slate-900 dark:text-white leading-tight">Productivity Pulse</h2>
-                                    <p className="text-[10px] font-black text-indigo-500 uppercase tracking-widest leading-none mt-1">AI Engine v2.0</p>
+                                    <p className="text-[10px] font-black text-blue-500 uppercase tracking-widest leading-none mt-1">AI Engine v2.0</p>
                                 </div>
                             </div>
 
@@ -88,7 +88,7 @@ const AIInsightsCard = () => {
                                     </span>
                                 </div>
                             </div>
-                            <button className="p-2 rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-400 hover:text-indigo-500 transition-colors">
+                            <button className="p-2 rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-400 hover:text-blue-500 transition-colors">
                                 <ArrowUpRight size={18} />
                             </button>
                         </div>
@@ -108,7 +108,7 @@ const AIInsightsCard = () => {
                                     cx="112" cy="112" r="100"
                                     className={cn(
                                         "fill-none",
-                                        data.score > 70 ? "stroke-indigo-500" : "stroke-amber-500"
+                                        data.score > 70 ? "stroke-blue-500" : "stroke-amber-500"
                                     )}
                                     strokeWidth="12"
                                     strokeDasharray="628.3"
@@ -141,13 +141,13 @@ const AIInsightsCard = () => {
                                             initial={{ opacity: 0, x: 20 }}
                                             animate={{ opacity: 1, x: 0 }}
                                             transition={{ delay: 0.5 + (idx * 0.1) }}
-                                            className="flex items-start gap-4 p-4 rounded-2xl bg-white dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800/80 saas-shadow transition-all hover:border-indigo-500/30"
+                                            className="flex items-start gap-4 p-4 rounded-2xl bg-white dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800/80 saas-shadow transition-all hover:border-blue-500/30"
                                         >
                                             <div className={cn(
                                                 "p-2 rounded-xl mt-0.5",
                                                 insight.type === 'warning' ? "bg-amber-500/10 text-amber-500" :
                                                     insight.type === 'success' ? "bg-emerald-500/10 text-emerald-500" :
-                                                        "bg-indigo-500/10 text-indigo-500"
+                                                        "bg-blue-500/10 text-blue-500"
                                             )}>
                                                 {insight.type === 'warning' ? <AlertTriangle size={16} /> :
                                                     insight.type === 'success' ? <CheckCircle size={16} /> :

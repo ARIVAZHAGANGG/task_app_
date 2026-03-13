@@ -38,7 +38,7 @@ const InvoicePreview = ({ form, lineItems, currency }) => {
             {/* Header */}
             <div className="flex justify-between items-start mb-10">
                 <div>
-                    <h1 className="text-3xl font-black text-indigo-600">INVOICE</h1>
+                    <h1 className="text-3xl font-black text-blue-600">INVOICE</h1>
                     <p className="text-slate-400 text-sm mt-0.5"># {form.invoiceNumber || 'AUTO'}</p>
                 </div>
                 <div className="text-right text-sm">
@@ -74,7 +74,7 @@ const InvoicePreview = ({ form, lineItems, currency }) => {
             {/* Line Items Table */}
             <table className="w-full text-sm mb-6">
                 <thead>
-                    <tr className="border-b-2 border-indigo-600">
+                    <tr className="border-b-2 border-blue-600">
                         <th className="text-left pb-2 font-black text-slate-700">Description</th>
                         <th className="text-right pb-2 font-black text-slate-700">Hrs</th>
                         <th className="text-right pb-2 font-black text-slate-700">Rate</th>
@@ -110,9 +110,9 @@ const InvoicePreview = ({ form, lineItems, currency }) => {
                             <span className="font-bold">{fmtCurrency(taxAmount, currency)}</span>
                         </div>
                     )}
-                    <div className="flex justify-between border-t-2 border-indigo-600 pt-2">
-                        <span className="font-black text-indigo-600">TOTAL</span>
-                        <span className="font-black text-xl text-indigo-600">{fmtCurrency(total, currency)}</span>
+                    <div className="flex justify-between border-t-2 border-blue-600 pt-2">
+                        <span className="font-black text-blue-600">TOTAL</span>
+                        <span className="font-black text-xl text-blue-600">{fmtCurrency(total, currency)}</span>
                     </div>
                 </div>
             </div>
@@ -267,7 +267,7 @@ const InvoiceGenerator = () => {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
-                <div className="animate-spin w-10 h-10 rounded-full border-4 border-indigo-500 border-t-transparent" />
+                <div className="animate-spin w-10 h-10 rounded-full border-4 border-blue-500 border-t-transparent" />
             </div>
         );
     }
@@ -306,7 +306,7 @@ const InvoiceGenerator = () => {
                             key={tab.key}
                             onClick={() => setActiveTab(tab.key)}
                             className={`px-5 py-2.5 font-black text-sm rounded-t-xl transition-all -mb-px border-b-2 ${activeTab === tab.key
-                                    ? 'text-indigo-600 border-indigo-600'
+                                    ? 'text-blue-600 border-blue-600'
                                     : 'text-slate-500 border-transparent hover:text-slate-700 dark:hover:text-slate-300'
                                 }`}
                         >
@@ -324,10 +324,10 @@ const InvoiceGenerator = () => {
                             <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
                                 <div className="px-5 py-4 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between">
                                     <div className="flex items-center gap-2">
-                                        <User size={16} className="text-indigo-500" />
+                                        <User size={16} className="text-blue-500" />
                                         <h2 className="font-black text-sm text-slate-800 dark:text-white">Your Info (Freelancer)</h2>
                                     </div>
-                                    <button onClick={saveFreelancerDefaults} className="text-xs text-indigo-600 font-bold hover:underline">Save as default</button>
+                                    <button onClick={saveFreelancerDefaults} className="text-xs text-blue-600 font-bold hover:underline">Save as default</button>
                                 </div>
                                 <div className="p-5 grid grid-cols-2 gap-3">
                                     {[
@@ -339,7 +339,7 @@ const InvoiceGenerator = () => {
                                         <div key={f.key} className={f.key === 'freelancerInfo.address' ? 'col-span-2' : ''}>
                                             <label className="text-xs font-black text-slate-500 uppercase tracking-wider">{f.label}</label>
                                             <input
-                                                className="mt-1 w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2.5 text-sm text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                                className="mt-1 w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2.5 text-sm text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                 placeholder={f.placeholder}
                                                 value={f.key.split('.').reduce((o, k) => o?.[k], form) || ''}
                                                 onChange={e => updateForm(f.key, e.target.value)}
@@ -365,7 +365,7 @@ const InvoiceGenerator = () => {
                                         <div key={f.key} className={f.key === 'clientInfo.address' ? 'col-span-2' : ''}>
                                             <label className="text-xs font-black text-slate-500 uppercase tracking-wider">{f.label}</label>
                                             <input
-                                                className="mt-1 w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2.5 text-sm text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                                className="mt-1 w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2.5 text-sm text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                 placeholder={f.placeholder}
                                                 value={f.key.split('.').reduce((o, k) => o?.[k], form) || ''}
                                                 onChange={e => updateForm(f.key, e.target.value)}
@@ -385,17 +385,17 @@ const InvoiceGenerator = () => {
                                     <div>
                                         <label className="text-xs font-black text-slate-500 uppercase tracking-wider">Issue Date</label>
                                         <input type="date" value={form.issuedAt} onChange={e => updateForm('issuedAt', e.target.value)}
-                                            className="mt-1 w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2.5 text-sm text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                                            className="mt-1 w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2.5 text-sm text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
                                     </div>
                                     <div>
                                         <label className="text-xs font-black text-slate-500 uppercase tracking-wider">Due Date</label>
                                         <input type="date" value={form.dueDate} onChange={e => updateForm('dueDate', e.target.value)}
-                                            className="mt-1 w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2.5 text-sm text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                                            className="mt-1 w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2.5 text-sm text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
                                     </div>
                                     <div>
                                         <label className="text-xs font-black text-slate-500 uppercase tracking-wider">Currency</label>
                                         <select value={form.currency} onChange={e => updateForm('currency', e.target.value)}
-                                            className="mt-1 w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2.5 text-sm text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                            className="mt-1 w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2.5 text-sm text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
                                             {CURRENCIES.map(c => <option key={c}>{c}</option>)}
                                         </select>
                                     </div>
@@ -403,13 +403,13 @@ const InvoiceGenerator = () => {
                                         <label className="text-xs font-black text-slate-500 uppercase tracking-wider">Tax Rate (%)</label>
                                         <input type="number" min="0" max="100" value={form.taxRate}
                                             onChange={e => updateForm('taxRate', e.target.value)}
-                                            className="mt-1 w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2.5 text-sm text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                                            className="mt-1 w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2.5 text-sm text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
                                     </div>
                                     <div className="col-span-2">
                                         <label className="text-xs font-black text-slate-500 uppercase tracking-wider">Notes</label>
                                         <textarea rows={2} value={form.notes} onChange={e => updateForm('notes', e.target.value)}
                                             placeholder="Payment terms, bank details, thank-you note…"
-                                            className="mt-1 w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2.5 text-sm text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none" />
+                                            className="mt-1 w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2.5 text-sm text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" />
                                     </div>
                                 </div>
                             </div>
@@ -441,12 +441,12 @@ const InvoiceGenerator = () => {
                                                     type="checkbox"
                                                     checked={!!selectedTasks[task.taskId]}
                                                     onChange={e => setSelectedTasks(p => ({ ...p, [task.taskId]: e.target.checked }))}
-                                                    className="w-4 h-4 accent-indigo-600 rounded"
+                                                    className="w-4 h-4 accent-blue-600 rounded"
                                                 />
                                                 <span className="text-sm font-bold text-slate-700 dark:text-slate-300">{task.taskTitle}</span>
                                             </div>
                                             <div className="text-right shrink-0 ml-3">
-                                                <p className="text-xs font-black text-indigo-600">{task.totalMinutes}m</p>
+                                                <p className="text-xs font-black text-blue-600">{task.totalMinutes}m</p>
                                                 <p className="text-xs text-slate-400">{fmtCurrency((task.totalMinutes / 60) * hourlyRate, form.currency)}</p>
                                             </div>
                                         </label>
@@ -459,14 +459,14 @@ const InvoiceGenerator = () => {
                                 <button
                                     onClick={() => handleSave('draft')}
                                     disabled={saving}
-                                    className="flex-1 py-3.5 rounded-xl font-black text-sm border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all disabled:opacity-50"
+                                    className="flex-1 py-3.5 rounded-xl font-black text-sm border-2 border-blue-600 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all disabled:opacity-50"
                                 >
                                     {saving ? 'Saving…' : '💾 Save Draft'}
                                 </button>
                                 <button
                                     onClick={() => handleSave('sent')}
                                     disabled={saving}
-                                    className="flex-1 py-3.5 rounded-xl font-black text-sm bg-indigo-600 text-white hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-500/20 disabled:opacity-50 flex items-center justify-center gap-2"
+                                    className="flex-1 py-3.5 rounded-xl font-black text-sm bg-blue-600 text-white hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20 disabled:opacity-50 flex items-center justify-center gap-2"
                                 >
                                     <Send size={15} /> {saving ? 'Sending…' : 'Save & Mark Sent'}
                                 </button>
@@ -483,7 +483,7 @@ const InvoiceGenerator = () => {
                         <div className="sticky top-6">
                             <div className="flex items-center justify-between mb-3">
                                 <h2 className="font-black text-slate-700 dark:text-slate-300 text-sm uppercase tracking-widest">Live Preview</h2>
-                                <button onClick={handlePrint} className="flex items-center gap-1.5 text-xs font-bold text-indigo-600 hover:underline">
+                                <button onClick={handlePrint} className="flex items-center gap-1.5 text-xs font-bold text-blue-600 hover:underline">
                                     <Printer size={13} /> Print / PDF
                                 </button>
                             </div>
@@ -502,7 +502,7 @@ const InvoiceGenerator = () => {
                                 <FileText size={48} className="mx-auto text-slate-300 dark:text-slate-600 mb-4" />
                                 <p className="font-black text-slate-400 dark:text-slate-500">No invoices yet.</p>
                                 <button onClick={() => setActiveTab('create')}
-                                    className="mt-4 text-sm text-indigo-600 font-bold hover:underline">
+                                    className="mt-4 text-sm text-blue-600 font-bold hover:underline">
                                     Create your first invoice →
                                 </button>
                             </div>
@@ -511,7 +511,7 @@ const InvoiceGenerator = () => {
                             return (
                                 <div key={inv.id} className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-5 flex items-center justify-between gap-4">
                                     <div className="flex items-center gap-4 min-w-0">
-                                        <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 rounded-xl flex items-center justify-center shrink-0">
+                                        <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-xl flex items-center justify-center shrink-0">
                                             <FileText size={18} />
                                         </div>
                                         <div className="min-w-0">

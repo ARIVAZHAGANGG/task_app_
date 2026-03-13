@@ -1,37 +1,26 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  /* SaaS Modern Palette */
-  --primary: #6366F1;
-  --primary-hover: #4F46E5;
-  --secondary: #8B5CF6;
-  --success: #22C55E;
-  --warning: #F59E0B;
-  --danger: #EF4444;
-  --bg-light: #F8FAFC;
-  --bg-dark: #0F172A;
+  /* ZenTask Professional Blue Palette */
+  --primary: #2563eb;
+  --primary-gradient: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+  --secondary: #60a5fa;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
 
-  /* Light Theme Vars */
-  --bg-primary: #F8FAFC;
-  --bg-secondary: #ffffff;
-  --bg-tertiary: #f1f5f9;
-  --text-primary: #0F172A;
-  --text-secondary: #475569;
+  /* Light Theme - Clean & Spacious */
+  --bg-primary: #FDFCF8;
+  --bg-secondary: #FFFFFF;
+  --bg-tertiary: #F8FAFC;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
   --text-tertiary: #94a3b8;
-  --border-color: #E2E8F0;
-  --hover-bg: #F1F5F9;
-  --card-bg: #ffffff;
-  --sidebar-bg: #ffffff;
-  --navbar-bg: #ffffff;
-
-  /* Priority Colors */
-  --priority-high: #EF4444;
-  --priority-medium: #F59E0B;
-  --priority-low: #22C55E;
+  --border-color: #f1f5f9;
+  --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.04), 0 4px 6px -4px rgba(0, 0, 0, 0.02);
+  --card-shadow-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
 }
 
 [data-theme="dark"],
@@ -67,22 +56,16 @@
 }
 
 ::selection {
-  background-color: rgba(99, 102, 241, 0.4);
+  background-color: rgba(37, 99, 235, 0.4);
   color: #ffffff;
 }
 
 @layer base {
   body {
-    @apply antialiased transition-colors duration-300 font-inter;
+    @apply antialiased transition-colors duration-300 font-inter text-[15px];
     background-color: var(--bg-primary);
     color: var(--text-primary);
-    /* Mobile Optimizations */
-    padding-bottom: env(safe-area-inset-bottom);
     min-height: 100vh;
-    /* -webkit-fill-available support */
-    min-height: -webkit-fill-available;
-    touch-action: manipulation;
-    /* Improves tap delay */
   }
 
   h1,
@@ -91,20 +74,18 @@
   h4,
   h5,
   h6 {
-    @apply font-black tracking-tight;
+    @apply tracking-tight;
     color: var(--text-primary);
   }
 
-  p,
-  span,
-  div {
-    @apply font-medium;
+  .font-serif {
+    font-family: 'Playfair Display', serif;
   }
 }
 
 @layer components {
   .saas-gradient {
-    @apply bg-gradient-to-r from-indigo-500 to-purple-500;
+    @apply bg-gradient-to-r from-blue-600 to-blue-400;
   }
 
   .saas-shadow {
@@ -121,7 +102,7 @@
   }
 
   .btn-primary {
-    @apply saas-gradient text-white font-bold py-3 px-6 rounded-xl transition-all duration-300 active:scale-95 shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/40;
+    @apply saas-gradient text-white font-bold py-3 px-6 rounded-xl transition-all duration-300 active:scale-95 shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40;
   }
 
   /* Status Badges */
@@ -142,7 +123,7 @@
   }
 
   .badge-primary {
-    @apply bg-indigo-500/10 text-indigo-600 border border-indigo-500/20;
+    @apply bg-blue-500/10 text-blue-600 border border-blue-500/20;
   }
 
   /* Floating Label Input System */
@@ -151,7 +132,7 @@
   }
 
   .floating-input {
-    @apply w-full px-4 pt-6 pb-2 bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:bg-white dark:focus:bg-slate-800 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all duration-300 text-sm font-semibold;
+    @apply w-full px-4 pt-6 pb-2 bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:bg-white dark:focus:bg-slate-800 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all duration-300 text-sm font-semibold;
   }
 
   .floating-label {
@@ -160,12 +141,12 @@
 
   .floating-input:focus~.floating-label,
   .floating-input:not(:placeholder-shown)~.floating-label {
-    @apply top-2 text-[10px] font-bold text-indigo-500 uppercase tracking-wider;
+    @apply top-2 text-[10px] font-bold text-blue-500 uppercase tracking-wider;
   }
 
   /* Standard Input for other cases */
   .saas-input {
-    @apply w-full px-5 py-3 bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:bg-white dark:focus:bg-slate-800 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all duration-300 text-sm font-semibold;
+    @apply w-full px-5 py-3 bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:bg-white dark:focus:bg-slate-800 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all duration-300 text-sm font-semibold;
   }
 }
 

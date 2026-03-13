@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Plus, Bell, Sparkles, BrainCircuit, Loader2 } from "lucide-react";
+import { X, Plus, Bell, Sparkles, BrainCircuit, Loader2, ListPlus, Mic, MicOff } from "lucide-react";
 import { cn } from "../../utils/cn";
 import Input from "./Input";
 import AttachmentZone from "../tasks/AttachmentZone";
@@ -8,6 +8,14 @@ import api from "../../services/api";
 import { toast } from "sonner";
 
 const TaskModal = ({ isOpen, onClose, onSave, task = null }) => {
+    const cleanData = (data) => {
+        const cleaned = { ...data };
+        ['dueDate', 'reminderDate', 'phoneNumber'].forEach(key => {
+            if (cleaned[key] === "") delete cleaned[key];
+        });
+        return cleaned;
+    };
+
     const [formData, setFormData] = useState({
         title: "",
         description: "",
@@ -20,11 +28,16 @@ const TaskModal = ({ isOpen, onClose, onSave, task = null }) => {
         smsEnabled: false,
         phoneNumber: "",
         category: "Personal",
-        status: "todo"
+        status: "todo",
+        estimatedTime: 60
     });
     const [isGeneratingBreakdown, setIsGeneratingBreakdown] = useState(false);
     const [isSuggesting, setIsSuggesting] = useState(false);
     const [isSuggestingReminder, setIsSuggestingReminder] = useState(false);
+    const [isBulkMode, setIsBulkMode] = useState(false);
+    const [isListening, setIsListening] = useState(false);
+    const [isProcessingVoice, setIsProcessingVoice] = useState(false);
+    const [recognition, setRecognition] = useState(null);
 
     useEffect(() => {
         if (task) {
@@ -40,7 +53,9 @@ const TaskModal = ({ isOpen, onClose, onSave, task = null }) => {
                 smsEnabled: task.smsEnabled || false,
                 phoneNumber: task.phoneNumber || "",
                 category: task.category || "Personal",
-                status: task.status || "todo"
+                status: task.status || "todo",
+                estimatedTime: task.estimatedTime || 60,
+                createdAt: task.createdAt
             });
         } else {
             setFormData({
@@ -55,7 +70,8 @@ const TaskModal = ({ isOpen, onClose, onSave, task = null }) => {
                 smsEnabled: false,
                 phoneNumber: "",
                 category: "Personal",
-                status: "todo"
+                status: "todo",
+                estimatedTime: 60
             });
         }
     }, [task, isOpen]);
@@ -104,6 +120,70 @@ const TaskModal = ({ isOpen, onClose, onSave, task = null }) => {
             setIsSuggestingReminder(false);
         }
     };
+
+    useEffect(() => {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (SpeechRecognition) {
+            const recog = new SpeechRecognition();
+            recog.continuous = false;
+            recog.interimResults = false;
+            recog.lang = 'en-US';
+
+            recog.onstart = () => setIsListening(true);
+            recog.onend = () => setIsListening(false);
+
+            recog.onresult = async (event) => {
+                const transcript = event.results[0][0].transcript;
+                await handleVoiceProcess(transcript);
+            };
+
+            recog.onerror = (event) => {
+                console.error("Speech recognition error", event.error);
+                setIsListening(false);
+                toast.error("Voice recognition failed.");
+            };
+
+            setRecognition(recog);
+        }
+    }, []);
+
+    const handleVoiceProcess = async (transcript) => {
+        setIsProcessingVoice(true);
+        try {
+            const res = await api.post('/ai/voice-command', { transcript });
+            if (res.data.success && res.data.task) {
+                const taskData = res.data.task;
+                setFormData(prev => ({
+                    ...prev,
+                    title: taskData.title || prev.title,
+                    description: taskData.description || prev.description,
+                    priority: taskData.priority?.toLowerCase() || prev.priority,
+                    category: taskData.category || prev.category,
+                    dueDate: taskData.dueDate ? new Date(taskData.dueDate).toISOString().slice(0, 16) : prev.dueDate
+                }));
+                toast.success("AI Assessment complete!", {
+                    icon: <Sparkles className="text-amber-500" size={16} />
+                });
+            }
+        } catch (err) {
+            toast.error("AI failed to assess voice command");
+        } finally {
+            setIsProcessingVoice(false);
+        }
+    };
+
+    const toggleListening = () => {
+        if (!recognition) {
+            toast.error("Speech recognition not supported");
+            return;
+        }
+        if (isListening) {
+            recognition.stop();
+        } else {
+            recognition.start();
+        }
+    };
+
 
     useEffect(() => {
         const getSuggestion = async () => {
@@ -161,24 +241,100 @@ const TaskModal = ({ isOpen, onClose, onSave, task = null }) => {
                                 {task ? "Update Task" : "New Task"}
                             </h2>
                         </div>
-                        <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-all">
-                            <X size={20} />
-                        </button>
+                        <div className="flex items-center gap-3">
+                            <button
+                                type="button"
+                                onClick={() => setIsBulkMode(!isBulkMode)}
+                                className={cn(
+                                    "p-2 rounded-xl transition-all flex items-center gap-2 text-xs font-bold uppercase tracking-wider",
+                                    isBulkMode
+                                        ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20"
+                                        : "bg-slate-50 dark:bg-slate-800 text-slate-400 hover:text-blue-500"
+                                )}
+                                title="Bulk Mode - Add multiple tasks list-wise"
+                            >
+                                <ListPlus size={18} />
+                                {!isBulkMode ? "" : "Bulk Mode"}
+                            </button>
+                            <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-all">
+                                <X size={20} />
+                            </button>
+                        </div>
                     </div>
-
-                    <form onSubmit={(e) => {
+                     <form onSubmit={async (e) => {
                         e.preventDefault();
-                        onSave(formData);
+                        if (isBulkMode && !task) {
+                            const titles = formData.title.split('\n').filter(t => t.trim() !== '');
+                            if (titles.length === 0) return;
+
+                            const bulkData = titles.map(title => cleanData({
+                                ...formData,
+                                title: title.trim()
+                            }));
+                            onSave(bulkData);
+                        } else {
+                            onSave(cleanData(formData));
+                        }
                     }} className="flex flex-col overflow-hidden">
                         <div className="p-8 space-y-6 overflow-y-auto flex-1 custom-scrollbar">
+                            {formData.createdAt && (
+                                <div className="mb-4 flex items-center justify-between px-2">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-slate-400" />
+                                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Registered</span>
+                                    </div>
+                                    <span className="text-[10px] font-black text-slate-500 bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-full uppercase tracking-widest">
+                                        {new Date(formData.createdAt).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}
+                                    </span>
+                                </div>
+                            )}
                             <div className="space-y-6">
-                                <Input
-                                    label="Task Name"
-                                    value={formData.title}
-                                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                                    required
-                                    className="bg-slate-50 dark:bg-slate-800 border-none text-slate-800 dark:text-slate-100"
-                                />
+                                <div className="space-y-2">
+                                    <div className="flex items-center justify-between ml-1">
+                                        <label className="text-sm font-bold text-slate-700 dark:text-slate-300">
+                                            {isBulkMode ? "Task List (one per line)" : "Task Name"}
+                                        </label>
+                                        {!isBulkMode && (
+                                            <button
+                                                type="button"
+                                                onClick={toggleListening}
+                                                className={cn(
+                                                    "flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest transition-all",
+                                                    isListening 
+                                                        ? "bg-rose-500 text-white animate-pulse" 
+                                                        : isProcessingVoice 
+                                                            ? "bg-amber-500 text-white" 
+                                                            : "bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-primary-600"
+                                                )}
+                                            >
+                                                {isProcessingVoice ? (
+                                                    <Loader2 size={12} className="animate-spin" />
+                                                ) : isListening ? (
+                                                    <MicOff size={12} />
+                                                ) : (
+                                                    <Mic size={12} />
+                                                )}
+                                                {isProcessingVoice ? "AI Assessing..." : isListening ? "Listening..." : "Voice Assessment"}
+                                            </button>
+                                        )}
+                                    </div>
+                                    {isBulkMode ? (
+                                        <textarea
+                                            value={formData.title}
+                                            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                                            required
+                                            placeholder="Task 1&#10;Task 2&#10;Task 3"
+                                            className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl outline-none transition-all duration-300 focus:ring-4 focus:ring-primary-100 text-slate-800 dark:text-slate-100 placeholder:text-slate-400 min-h-[120px] font-medium"
+                                        />
+                                    ) : (
+                                        <Input
+                                            value={formData.title}
+                                            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                                            required
+                                            className="bg-slate-50 dark:bg-slate-800 border-none text-slate-800 dark:text-slate-100"
+                                        />
+                                    )}
+                                </div>
 
                                 <div className="space-y-2">
                                     <div className="flex items-center justify-between ml-1">
@@ -230,13 +386,77 @@ const TaskModal = ({ isOpen, onClose, onSave, task = null }) => {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="text-sm font-bold text-slate-700 dark:text-slate-300 ml-1">Deadline (Optional)</label>
                                     <Input
                                         type="datetime-local"
                                         value={formData.dueDate}
                                         onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
                                         className="border-none bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-100"
                                     />
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-bold text-slate-700 dark:text-slate-300 ml-1">Est. Duration</label>
+                                        <div className="flex gap-2">
+                                            {[
+                                                { label: '30m', value: 30 },
+                                                { label: '1h', value: 60 },
+                                                { label: '2h', value: 120 },
+                                                { label: '3h', value: 180 }
+                                            ].map(d => (
+                                                <button
+                                                    key={d.value}
+                                                    type="button"
+                                                    onClick={() => setFormData({ ...formData, estimatedTime: d.value })}
+                                                    className={cn(
+                                                        "flex-1 py-3 px-1 rounded-2xl border-2 text-[10px] font-black uppercase tracking-widest transition-all",
+                                                        formData.estimatedTime === d.value
+                                                            ? "bg-primary-600 text-white border-primary-600 shadow-md"
+                                                            : "bg-white dark:bg-slate-800 text-slate-400 border-slate-100 dark:border-slate-800"
+                                                    )}
+                                                >
+                                                    {d.label}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-bold text-slate-700 dark:text-slate-300 ml-1">Expected Finish</label>
+                                        <div className="px-5 py-3.5 bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-100 dark:border-emerald-800/30 rounded-2xl flex items-center justify-between">
+                                            <span className="text-xs font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-widest italic">Target</span>
+                                            <span className="text-sm font-black text-emerald-700 dark:text-emerald-300 font-mono">
+                                                {formData.dueDate ? (
+                                                    new Date(new Date(formData.dueDate).getTime() + formData.estimatedTime * 60000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                                                ) : "--:--"}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-sm font-bold text-slate-700 dark:text-slate-300 ml-1">Recurrence</label>
+                                    <div className="grid grid-cols-4 gap-2">
+                                        {[
+                                            { id: "none", label: "None" },
+                                            { id: "daily", label: "Daily" },
+                                            { id: "weekly", label: "Weekly" },
+                                            { id: "monthly", label: "Monthly" }
+                                        ].map((r) => (
+                                            <button
+                                                key={r.id}
+                                                type="button"
+                                                onClick={() => setFormData({ ...formData, recurrence: r.id })}
+                                                className={cn(
+                                                    "py-2 rounded-xl border-2 text-xs font-bold transition-all",
+                                                    formData.recurrence === r.id
+                                                        ? "bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border-blue-200"
+                                                        : "bg-white dark:bg-slate-800 text-slate-400 border-slate-100 dark:border-slate-700"
+                                                )}
+                                            >
+                                                {r.label}
+                                            </button>
+                                        ))}
+                                    </div>
                                 </div>
 
                                 {/* Reminder Section */}
@@ -276,7 +496,7 @@ const TaskModal = ({ isOpen, onClose, onSave, task = null }) => {
                                                     type="button"
                                                     onClick={handleAISuggestReminder}
                                                     disabled={isSuggestingReminder}
-                                                    className="p-3 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-xl hover:bg-indigo-100 transition-all shadow-sm flex items-center justify-center shrink-0"
+                                                    className="p-3 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-xl hover:bg-blue-100 transition-all shadow-sm flex items-center justify-center shrink-0"
                                                     title="AI Suggest Optimal Time"
                                                 >
                                                     {isSuggestingReminder ? <Loader2 className="animate-spin" size={16} /> : <BrainCircuit size={16} />}
@@ -313,7 +533,7 @@ const TaskModal = ({ isOpen, onClose, onSave, task = null }) => {
                                             type="button"
                                             onClick={handleAIBreakdown}
                                             disabled={isGeneratingBreakdown || !formData.title}
-                                            className="flex items-center gap-2 text-xs font-bold text-purple-600 hover:text-purple-700 disabled:opacity-50 transition-colors"
+                                            className="flex items-center gap-2 text-xs font-bold text-sky-600 hover:text-sky-700 disabled:opacity-50 transition-colors"
                                         >
                                             <Sparkles size={14} className={isGeneratingBreakdown ? "animate-spin" : ""} />
                                             {isGeneratingBreakdown ? "Generating..." : "AI Auto-Breakdown"}
@@ -335,7 +555,7 @@ const TaskModal = ({ isOpen, onClose, onSave, task = null }) => {
                                 type="submit"
                                 className="flex-[2] py-4 px-6 rounded-2xl bg-slate-900 dark:bg-primary-600 text-white font-bold shadow-xl shadow-slate-900/10 hover:shadow-2xl hover:bg-black dark:hover:bg-primary-700 transition-all"
                             >
-                                {task ? "Update Objective" : "Launch Task"}
+                                {isBulkMode ? "Launch Tasks" : task ? "Update Objective" : "Launch Task"}
                             </button>
                         </div>
                     </form>

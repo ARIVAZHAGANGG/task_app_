@@ -17,6 +17,7 @@ const getPageTitle = (pathname) => {
     if (pathname === "/important") return "Important";
     if (pathname === "/planned") return "Planned";
     if (pathname === "/completed") return "Completed";
+    if (pathname === "/board") return "Task List";
     const segment = pathname.split("/").pop();
     return segment ? segment.charAt(0).toUpperCase() + segment.slice(1).replace(/-/g, " ") : "ZenTask";
 };
@@ -127,29 +128,29 @@ const Navbar = ({ onNewTask }) => {
     const { searchTerm, setSearchTerm } = useSearch();
 
     return (
-        <header className="h-20 lg:h-24 px-4 sm:px-8 bg-[var(--bg-secondary)] dark:bg-[var(--bg-secondary)]/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 flex items-center justify-between sticky top-0 z-40 transition-all duration-300">
+        <header className="h-24 px-10 bg-white dark:bg-slate-900 border-b border-slate-50 dark:border-slate-800/50 flex items-center justify-between sticky top-0 z-40 transition-all duration-300">
             {/* LEFT: Logo & Title */}
-            <div className="flex items-center gap-4 shrink-0">
-                <div className="hidden sm:block">
-                    <Logo className="w-8 h-8 lg:w-10 lg:h-10" />
+            <div className="flex items-center gap-6 shrink-0">
+                <div className="hidden sm:flex w-12 h-12 bg-white rounded-2xl shadow-sm border border-slate-100 items-center justify-center p-2">
+                    <img src="/assets/logo.png" alt="ZenTask" className="w-full h-full object-contain" />
                 </div>
                 <div>
-                    <h1 className="text-xl lg:text-2xl font-black text-slate-900 dark:text-slate-100 tracking-tight leading-none">
+                    <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
                         {pageTitle}
                     </h1>
                 </div>
             </div>
 
             {/* CENTER: Search Bar (Flex Grow) */}
-            <div className="flex-1 max-w-2xl mx-4 sm:mx-8 hidden md:block">
+            <div className="flex-1 max-w-2xl mx-12 hidden md:block">
                 <div className="relative group">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors" size={18} />
+                    <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" size={20} />
                     <input
                         type="text"
                         placeholder="Search tasks, objectives..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-12 pr-4 py-3 bg-slate-100/50 dark:bg-slate-800/50 border border-transparent rounded-[1.25rem] focus:bg-white dark:focus:bg-slate-800 focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all duration-300 text-sm font-medium"
+                        className="w-full pl-14 pr-6 py-4 bg-slate-100/50 dark:bg-slate-800/50 border border-transparent rounded-3xl focus:bg-white dark:focus:bg-slate-800 focus:border-blue-500/20 focus:ring-8 focus:ring-blue-500/5 outline-none transition-all duration-300 text-sm font-medium"
                     />
                 </div>
             </div>
@@ -164,7 +165,7 @@ const Navbar = ({ onNewTask }) => {
                             onClick={() => setShowNotifications(!showNotifications)}
                             className={cn(
                                 "p-2.5 rounded-xl transition-all relative",
-                                showNotifications ? "bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600" : "text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
+                                showNotifications ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600" : "text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
                             )}
                         >
                             <Bell size={20} />
@@ -190,7 +191,7 @@ const Navbar = ({ onNewTask }) => {
                                                 <>
                                                     <button
                                                         onClick={handleMarkAllRead}
-                                                        className="text-[10px] font-black uppercase text-indigo-600 hover:text-indigo-700 transition-colors"
+                                                        className="text-[10px] font-black uppercase text-blue-600 hover:text-blue-700 transition-colors"
                                                     >
                                                         Read All
                                                     </button>
@@ -212,7 +213,7 @@ const Navbar = ({ onNewTask }) => {
                                                     onClick={() => handleNotificationClick(n)}
                                                     className={cn(
                                                         "p-4 border-b border-slate-50 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors flex gap-3 cursor-pointer relative group",
-                                                        !n.isRead && "bg-indigo-50/20 dark:bg-indigo-900/10 border-l-4 border-l-indigo-500"
+                                                        !n.isRead && "bg-blue-50/20 dark:bg-blue-900/10 border-l-4 border-l-blue-500"
                                                     )}
                                                 >
                                                     <div className={cn(
@@ -257,7 +258,7 @@ const Navbar = ({ onNewTask }) => {
                         onClick={() => setShowProfile(!showProfile)}
                         className="flex items-center p-1 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-all shrink-0 border border-transparent hover:border-slate-200 dark:hover:border-slate-700"
                     >
-                        <div className="w-10 h-10 rounded-xl saas-gradient text-white flex items-center justify-center font-black text-xs shadow-lg shadow-indigo-500/20">
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-blue-500 to-sky-500 text-white flex items-center justify-center font-black text-xs shadow-lg shadow-blue-500/20">
                             {getInitials(user?.name)}
                         </div>
                     </button>
@@ -271,7 +272,7 @@ const Navbar = ({ onNewTask }) => {
                                 className="absolute right-0 mt-3 w-64 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-100 dark:border-slate-800 overflow-hidden z-50 py-3"
                             >
                                 <div className="px-5 py-3 border-b border-slate-50 dark:border-slate-800 mb-2">
-                                    <p className="text-xs font-black text-indigo-600 uppercase tracking-widest mb-1">{user?.name}</p>
+                                    <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-1">{user?.name}</p>
                                     <p className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate">{user?.email}</p>
                                 </div>
 
@@ -284,12 +285,12 @@ const Navbar = ({ onNewTask }) => {
                                         </div>
                                         <p className="text-lg font-black text-orange-700 dark:text-orange-400 leading-none">{user?.stats?.streak || 0}d</p>
                                     </div>
-                                    <div className="bg-indigo-50 dark:bg-indigo-950/20 p-2.5 rounded-xl border border-indigo-100 dark:border-indigo-900/30 text-center">
+                                    <div className="bg-blue-50 dark:bg-blue-950/20 p-2.5 rounded-xl border border-blue-100 dark:border-blue-900/30 text-center">
                                         <div className="flex items-center justify-center gap-1.5 mb-1">
-                                            <BarChart3 size={14} className="text-indigo-500" strokeWidth={3} />
-                                            <span className="text-[10px] font-black uppercase text-indigo-600 tracking-tighter">Score</span>
+                                            <BarChart3 size={14} className="text-blue-500" strokeWidth={3} />
+                                            <span className="text-[10px] font-black uppercase text-blue-600 tracking-tighter">Score</span>
                                         </div>
-                                        <p className="text-lg font-black text-indigo-700 dark:text-indigo-400 leading-none">{user?.stats?.productivityScore || 0}%</p>
+                                        <p className="text-lg font-black text-blue-700 dark:text-blue-400 leading-none">{user?.stats?.productivityScore || 0}%</p>
                                     </div>
                                     <div className="bg-slate-50 dark:bg-slate-800/50 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800 text-center">
                                         <div className="flex items-center justify-center gap-1.5 mb-1">
@@ -313,12 +314,12 @@ const Navbar = ({ onNewTask }) => {
                                         className="w-full px-3 py-2.5 text-left text-sm font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl flex items-center justify-between group transition-colors"
                                     >
                                         <div className="flex items-center gap-3">
-                                            <div className="p-1.5 bg-slate-100 dark:bg-slate-800 rounded-lg group-hover:bg-indigo-100 dark:group-hover:bg-indigo-900/30 group-hover:text-indigo-600 transition-colors">
+                                            <div className="p-1.5 bg-slate-100 dark:bg-slate-800 rounded-lg group-hover:bg-blue-100 dark:group-hover:bg-blue-900/30 group-hover:text-blue-600 transition-colors">
                                                 <User size={16} />
                                             </div>
                                             Profile
                                         </div>
-                                        <CheckCircle2 size={14} className="opacity-0 group-hover:opacity-100 text-indigo-500" />
+                                        <CheckCircle2 size={14} className="opacity-0 group-hover:opacity-100 text-blue-500" />
                                     </button>
 
                                     <button
@@ -339,10 +340,10 @@ const Navbar = ({ onNewTask }) => {
                 {/* New Objective Button (Responsive) */}
                 <button
                     onClick={onNewTask}
-                    className="flex items-center gap-2.5 px-6 py-3.5 btn-primary shrink-0"
+                    className="flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-500 to-sky-500 text-white rounded-2xl shadow-lg shadow-blue-100 hover:scale-105 active:scale-95 transition-all font-bold text-sm tracking-wide"
                 >
                     <Plus size={20} strokeWidth={4} />
-                    <span className="hidden sm:inline">New Objective</span>
+                    <span className="hidden sm:inline">Add New Task</span>
                 </button>
             </div>
         </header>

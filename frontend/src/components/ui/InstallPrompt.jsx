@@ -43,7 +43,7 @@ const InstallPrompt = () => {
                 className="fixed bottom-6 right-6 z-50 max-w-sm w-full"
             >
                 <div className="bg-white dark:bg-slate-800 rounded-2xl p-5 shadow-2xl border border-slate-200 dark:border-slate-700 relative overflow-hidden">
-                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 to-purple-500" />
+                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-sky-500" />
 
                     <button
                         onClick={() => setShowPrompt(false)}
@@ -53,7 +53,7 @@ const InstallPrompt = () => {
                     </button>
 
                     <div className="flex items-start gap-4">
-                        <div className="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 flex-shrink-0">
+                        <div className="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 flex-shrink-0">
                             <Download size={24} />
                         </div>
                         <div>

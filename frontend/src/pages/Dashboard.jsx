@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { LayoutDashboard, CheckCircle2, Clock, TrendingUp, Calendar, Zap, Activity } from "lucide-react";
+import { LayoutDashboard, CheckCircle2, Clock, TrendingUp, Calendar, Zap, Activity, Sun } from "lucide-react";
 import api from "../services/api";
 import StatsCard from "../components/dashboard/StatsCard";
 import AnalyticsCharts from "../components/dashboard/AnalyticsCharts";
@@ -47,7 +47,7 @@ const Dashboard = () => {
             <div className="flex flex-col items-center justify-center h-[80vh] gap-4">
                 <div className="relative w-16 h-16">
                     <div className="absolute inset-0 rounded-full border-4 border-slate-100 dark:border-slate-800" />
-                    <div className="absolute inset-0 rounded-full border-4 border-indigo-500 border-t-transparent animate-spin" />
+                    <div className="absolute inset-0 rounded-full border-4 border-blue-500 border-t-transparent animate-spin" />
                 </div>
                 <p className="text-slate-500 font-bold uppercase tracking-widest text-xs animate-pulse">Initializing Control Center...</p>
             </div>
@@ -73,65 +73,84 @@ const Dashboard = () => {
         <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="p-8 max-w-7xl mx-auto transition-colors duration-300 space-y-10"
+            className="p-10 max-w-[1600px] mx-auto transition-colors duration-300"
         >
-            <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-                <div className="flex items-center gap-5">
-                    <div className="w-16 h-16 saas-gradient rounded-[2rem] shadow-xl shadow-indigo-500/20 flex items-center justify-center transition-transform hover:rotate-6">
-                        <LayoutDashboard className="w-8 h-8 text-white" strokeWidth={2.5} />
+            <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
+                <div className="flex items-center gap-6">
+                    <div className="w-16 h-16 bg-white rounded-3xl shadow-sm border border-slate-100 flex items-center justify-center transition-transform hover:scale-105 active:scale-95">
+                        <img src="/assets/logo.png" alt="ZenTask" className="w-10 h-10 object-contain" />
                     </div>
                     <div>
-                        <h1 className="text-4xl font-bold text-slate-900 dark:text-white tracking-tight">System <span className="text-indigo-600">Overview</span></h1>
-                        <p className="text-slate-500 dark:text-slate-400 font-medium mt-1">Your productivity mission, visualized in real-time.</p>
+                        <h1 className="text-4xl font-bold text-slate-900 dark:text-white tracking-tight leading-none">Dashboard</h1>
+                        <div className="flex items-center gap-2 mt-2">
+                            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                            <p className="text-slate-500 dark:text-slate-400 font-medium text-sm">System operational</p>
+                        </div>
                     </div>
                 </div>
 
-                <div className="flex items-center gap-4 bg-white dark:bg-slate-800 p-2 rounded-2xl border border-slate-100 dark:border-slate-700 saas-shadow">
-                    <div className="px-6 py-2.5 bg-slate-900 dark:bg-slate-700/50 rounded-xl flex items-center gap-4">
-                        <div className="flex flex-col">
-                            <span className="text-[10px] font-black text-indigo-400 uppercase tracking-widest leading-none">Global Server Time</span>
-                            <span className="text-lg font-bold text-white mt-1 font-mono tracking-tighter">
-                                {currentTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}
-                                <span className="animate-pulse opacity-50 ml-1">:</span>
-                                {currentTime.toLocaleTimeString('en-US', { second: '2-digit' })}
+                <div className="flex items-center gap-4">
+                    <div className="flex items-center bg-white dark:bg-slate-800 rounded-2xl p-1 shadow-sm border border-slate-100 dark:border-slate-700">
+                        <button className="p-2.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"><Sun size={18} /></button>
+                        <button className="p-2.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"><Clock size={18} /></button>
+                        <div className="w-px h-5 bg-slate-100 mx-1"></div>
+                        <button className="p-2.5 text-blue-600 bg-blue-50 rounded-xl transition-colors"><LayoutDashboard size={18} /></button>
+                    </div>
+
+                    <div className="flex items-center gap-4 bg-white dark:bg-slate-800 px-5 py-2.5 rounded-[20px] shadow-sm border border-slate-100 dark:border-slate-700">
+                        <div className="flex flex-col items-end">
+                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">Time</span>
+                            <span className="text-xl font-bold text-slate-900 dark:text-white mt-1 font-mono tracking-tighter">
+                                {currentTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true })}
                             </span>
                         </div>
-                        <Calendar className="text-slate-400" size={20} />
+                        <div className="w-12 h-12 bg-slate-900 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-slate-200">
+                            <Calendar size={22} />
+                        </div>
                     </div>
                 </div>
             </header>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <StatsCard title="Total Objectives" value={stats?.totalTasks || 0} icon={Zap} color="primary" index={0} />
-                <StatsCard
-                    title="Successful Completion"
-                    value={stats?.completedTasks || 0}
-                    icon={CheckCircle2}
-                    trend={graphData?.completionPercentage ? `+${Math.round(graphData.completionPercentage)}%` : null}
-                    color="success"
-                    index={1}
-                />
-                <StatsCard title="Active Operations" value={stats?.pendingTasks || 0} icon={Activity} color="warning" index={2} />
-                <StatsCard
-                    title="Efficiency Index"
-                    value={graphData?.completionPercentage ? `${Math.round(graphData.completionPercentage)}%` : "0%"}
-                    icon={TrendingUp}
-                    color="danger"
-                    index={3}
-                />
+            <div className="mb-12">
+                <div className="flex items-center gap-4 mb-6">
+                    <div className="w-12 h-12 bg-blue-500 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-100">
+                        <LayoutDashboard size={24} />
+                    </div>
+                    <div>
+                        <h2 className="text-3xl font-bold text-slate-900 dark:text-white">System <span className="text-blue-600 dark:text-blue-400 font-medium">Overview</span></h2>
+                        <p className="text-slate-500 dark:text-slate-400 font-medium mt-0.5">Your productivity mission, visualized in real-time.</p>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <StatsCard title="Total Objectives" value={stats?.totalTasks || 0} icon={Zap} color="primary" index={0} />
+                    <StatsCard
+                        title="Successful Completion"
+                        value={stats?.completedTasks || 0}
+                        icon={CheckCircle2}
+                        trend={graphData?.completionPercentage ? `+${Math.round(graphData.completionPercentage)}%` : null}
+                        color="success"
+                        index={1}
+                    />
+                    <StatsCard title="Active Operations" value={stats?.pendingTasks || 0} icon={Activity} color="warning" index={2} />
+                    <StatsCard
+                        title="Efficiency Index"
+                        value={graphData?.completionPercentage ? `${Math.round(graphData.completionPercentage)}%` : "0%"}
+                        icon={TrendingUp}
+                        color="danger"
+                        index={3}
+                    />
+                </div>
             </div>
 
             {/* AI Insights Section */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                <div className="lg:col-span-8">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+                <div className="lg:col-span-12">
                     <AIInsightsCard />
-                </div>
-                <div className="lg:col-span-4">
-                    <GamificationCard />
                 </div>
             </div>
 
-            <div className="saas-card p-2 overflow-hidden shadow-none border-none bg-transparent">
+            <div className="mt-10 p-2 overflow-hidden">
                 <AnalyticsCharts
                     weeklyData={weeklyActivity}
                     priorityData={priorityDist}
@@ -143,4 +162,3 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
-

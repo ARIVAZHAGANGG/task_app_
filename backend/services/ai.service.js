@@ -284,7 +284,7 @@ class AIService {
                 - title (string, mandatory)
                 - description (string, optional)
                 - priority (low, medium, high)
-                - category (Work, Personal, Health, Urgent, Other)
+                - category (Coding, Work, Home, Health, Study, Personal, Other)
                 - dueDate (ISO string if mentioned, else omit)
                 
                 Example: {"title": "Buy milk", "priority": "low", "category": "Personal"}`;

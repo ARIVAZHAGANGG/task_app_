@@ -49,9 +49,14 @@ exports.register = async (req, res) => {
       },
     });
   } catch (error) {
+    console.error("❌ Registration Error:", error.message);
+    if (error.name === 'MongooseServerSelectionError' || error.message.includes('connect')) {
+      return res.status(503).json({ message: "Database connection failed. Please check IP whitelist." });
+    }
     res.status(500).json({ message: error.message });
   }
 };
+
 
 /* ---------------- LOGIN ---------------- */
 exports.login = async (req, res) => {
@@ -98,9 +103,14 @@ exports.login = async (req, res) => {
       },
     });
   } catch (error) {
+    console.error("❌ Login Error:", error.message);
+    if (error.name === 'MongooseServerSelectionError' || error.message.includes('connect')) {
+      return res.status(503).json({ message: "Database connection failed. Please check IP whitelist." });
+    }
     res.status(500).json({ message: error.message });
   }
 };
+
 
 
 const { OAuth2Client } = require("google-auth-library");

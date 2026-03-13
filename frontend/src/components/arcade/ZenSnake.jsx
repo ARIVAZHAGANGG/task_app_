@@ -196,7 +196,7 @@ const ZenSnake = () => {
                 </div>
                 <div className="text-center">
                     <p className="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-black mb-1">Daily Best</p>
-                    <p className="text-4xl font-black text-indigo-400 tabular-nums">{highScore}</p>
+                    <p className="text-4xl font-black text-blue-400 tabular-nums">{highScore}</p>
                 </div>
             </div>
 
@@ -205,7 +205,7 @@ const ZenSnake = () => {
                     ref={canvasRef}
                     width={400}
                     height={400}
-                    className="rounded-3xl shadow-2xl shadow-indigo-500/10 border border-slate-800"
+                    className="rounded-3xl shadow-2xl shadow-blue-500/10 border border-slate-800"
                 />
 
                 <AnimatePresence>
@@ -232,7 +232,7 @@ const ZenSnake = () => {
 
                                 <button
                                     onClick={gameOver ? resetGame : () => setIsPaused(false)}
-                                    className="px-10 py-4 saas-gradient text-white font-black rounded-2xl shadow-xl shadow-indigo-500/40 hover:scale-105 active:scale-95 transition-all flex items-center gap-3 mx-auto"
+                                    className="px-10 py-4 saas-gradient text-white font-black rounded-2xl shadow-xl shadow-blue-500/40 hover:scale-105 active:scale-95 transition-all flex items-center gap-3 mx-auto"
                                 >
                                     {gameOver ? <RotateCcw size={20} /> : <Play size={20} />}
                                     {gameOver ? 'RETRY MISSION' : 'START FOCUS'}
@@ -252,7 +252,7 @@ const ZenSnake = () => {
                     </div>
                 </div>
                 <div className="p-4 bg-slate-100 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700 flex items-center gap-3">
-                    <Target className="text-indigo-500" size={20} />
+                    <Target className="text-blue-500" size={20} />
                     <div>
                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">Max XP</p>
                         <p className="text-sm font-bold text-slate-900 dark:text-white mt-1">50 XP / Session</p>

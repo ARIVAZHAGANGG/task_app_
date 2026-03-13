@@ -34,7 +34,10 @@ import { cn } from '../utils/cn';
 
 // --- Components ---
 
-const KanbanCard = ({ task, isOverlay }) => {
+const KanbanCard = ({ task, isOverlay, onEdit, onDelete, onComplete }) => {
+    const [menuOpen, setMenuOpen] = useState(false);
+    const menuRef = React.useRef(null);
+
     const {
         attributes,
         listeners,
@@ -49,6 +52,17 @@ const KanbanCard = ({ task, isOverlay }) => {
         transition,
         opacity: isDragging ? 0.3 : 1,
     };
+
+    // Close menu on outside click
+    React.useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (menuRef.current && !menuRef.current.contains(e.target)) {
+                setMenuOpen(false);
+            }
+        };
+        if (menuOpen) document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [menuOpen]);
 
     const priorityColors = {
         high: 'bg-rose-500/10 text-rose-600 border-rose-200/50',
@@ -107,15 +121,46 @@ const KanbanCard = ({ task, isOverlay }) => {
                     )}
                 </div>
 
-                <div className="w-6 h-6 rounded-lg bg-slate-50 dark:bg-slate-700/50 flex items-center justify-center text-slate-400">
-                    <MoreVertical size={14} />
+                {/* 3-dot menu */}
+                <div className="relative" ref={menuRef}>
+                    <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); setMenuOpen(prev => !prev); }}
+                        className="w-7 h-7 rounded-lg bg-slate-50 dark:bg-slate-700/50 flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all"
+                    >
+                        <MoreVertical size={14} />
+                    </button>
+
+                    {menuOpen && (
+                        <div className="absolute right-0 bottom-9 z-50 w-44 bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-700 overflow-hidden animate-fade-in">
+                            <button
+                                onClick={(e) => { e.stopPropagation(); setMenuOpen(false); onEdit && onEdit(task); }}
+                                className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
+                            >
+                                <span className="text-blue-500">✏️</span> Edit Task
+                            </button>
+                            <button
+                                onClick={(e) => { e.stopPropagation(); setMenuOpen(false); onComplete && onComplete(task); }}
+                                className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
+                            >
+                                <span className="text-emerald-500">✅</span> Mark Done
+                            </button>
+                            <div className="border-t border-slate-100 dark:border-slate-700" />
+                            <button
+                                onClick={(e) => { e.stopPropagation(); setMenuOpen(false); onDelete && onDelete(task.id); }}
+                                className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-colors"
+                            >
+                                <span>🗑️</span> Delete
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
     );
 };
 
-const KanbanColumn = ({ id, title, tasks, icon: Icon, color, onAddTask }) => {
+const KanbanColumn = ({ id, title, tasks, icon: Icon, color, onAddTask, onEdit, onDelete, onComplete }) => {
     return (
         <div className="flex flex-col w-full min-w-[300px] h-[calc(100vh-180px)] bg-slate-50/50 dark:bg-slate-900/20 rounded-[32px] p-4 border border-slate-100 dark:border-slate-800/50">
             <header className="px-4 py-3 flex items-center justify-between mb-4">
@@ -139,7 +184,7 @@ const KanbanColumn = ({ id, title, tasks, icon: Icon, color, onAddTask }) => {
             <div className="flex-1 overflow-y-auto px-1 space-y-4 custom-scrollbar">
                 <SortableContext id={id} items={tasks.map(t => t.id)} strategy={verticalListSortingStrategy}>
                     {tasks.map(task => (
-                        <KanbanCard key={task.id} task={task} />
+                        <KanbanCard key={task.id} task={task} onEdit={onEdit} onDelete={onDelete} onComplete={onComplete} />
                     ))}
                 </SortableContext>
 
@@ -159,6 +204,7 @@ const Kanban = () => {
     const [activeId, setActiveId] = useState(null);
     const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
     const [selectedStatus, setSelectedStatus] = useState('todo');
+    const [editingTask, setEditingTask] = useState(null);
 
     const sensors = useSensors(
         useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -183,13 +229,54 @@ const Kanban = () => {
 
     const handleCreateTask = async (formData) => {
         try {
-            await api.post("/tasks", formData);
-            toast.success("New task created on board");
+            if (editingTask) {
+                const taskId = editingTask.id || editingTask._id;
+                if (Array.isArray(formData)) {
+                    // Shouldn't happen in edit mode, but handle gracefully
+                    await api.put(`/tasks/${taskId}`, formData[0]);
+                } else {
+                    await api.put(`/tasks/${taskId}`, formData);
+                }
+                toast.success("Task updated!");
+            } else if (Array.isArray(formData)) {
+                await Promise.all(formData.map(data => api.post("/tasks", data)));
+                toast.success(`${formData.length} tasks launched!`);
+            } else {
+                await api.post("/tasks", formData);
+                toast.success("New task created on board");
+            }
             setIsTaskModalOpen(false);
+            setEditingTask(null);
             fetchTasks();
             window.dispatchEvent(new CustomEvent("refresh-tasks"));
         } catch (error) {
-            toast.error("Failed to create task");
+            toast.error("Failed to save task");
+        }
+    };
+
+    const handleEdit = (task) => {
+        setEditingTask(task);
+        setIsTaskModalOpen(true);
+    };
+
+    const handleDelete = async (taskId) => {
+        if (!window.confirm("Delete this task?")) return;
+        try {
+            await api.delete(`/tasks/${taskId}`);
+            toast.success("Task deleted");
+            fetchTasks();
+        } catch (err) {
+            toast.error("Failed to delete task");
+        }
+    };
+
+    const handleComplete = async (task) => {
+        try {
+            await api.put(`/tasks/${task.id}`, { completed: true, status: 'completed' });
+            toast.success("Task marked as done! 🎉");
+            fetchTasks();
+        } catch (err) {
+            toast.error("Failed to update task");
         }
     };
 
@@ -289,7 +376,7 @@ const Kanban = () => {
         <div className="p-8 max-w-[1600px] mx-auto space-y-8 animate-slide-up">
             <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
-                    <h1 className="text-4xl font-black text-slate-800 dark:text-white tracking-tight">Focus <span className="text-primary-600">Board</span></h1>
+                    <h1 className="text-4xl font-black text-slate-800 dark:text-white tracking-tight">Task <span className="text-primary-600">List</span></h1>
                     <p className="text-slate-500 font-bold mt-1">Drag and drop to manage your workflow</p>
                 </div>
             </header>
@@ -309,14 +396,20 @@ const Kanban = () => {
                         icon={Circle}
                         color="bg-slate-100 dark:bg-slate-800/50 text-slate-500 border-slate-200 dark:border-slate-700"
                         onAddTask={openAddTask}
+                        onEdit={handleEdit}
+                        onDelete={handleDelete}
+                        onComplete={handleComplete}
                     />
                     <KanbanColumn
                         id="in_progress"
                         title="In Progress"
                         tasks={columns.in_progress}
                         icon={Clock}
-                        color="bg-indigo-50 dark:bg-indigo-900/10 text-indigo-600 border-indigo-100 dark:border-indigo-800/30"
+                        color="bg-blue-50 dark:bg-blue-900/10 text-blue-600 border-blue-100 dark:border-blue-800/30"
                         onAddTask={openAddTask}
+                        onEdit={handleEdit}
+                        onDelete={handleDelete}
+                        onComplete={handleComplete}
                     />
                     <KanbanColumn
                         id="completed"
@@ -325,6 +418,9 @@ const Kanban = () => {
                         icon={CheckCircle2}
                         color="bg-emerald-50 dark:bg-emerald-900/10 text-emerald-600 border-emerald-100 dark:border-emerald-800/30"
                         onAddTask={openAddTask}
+                        onEdit={handleEdit}
+                        onDelete={handleDelete}
+                        onComplete={handleComplete}
                     />
                 </div>
 
@@ -339,9 +435,9 @@ const Kanban = () => {
 
             <TaskModal
                 isOpen={isTaskModalOpen}
-                onClose={() => setIsTaskModalOpen(false)}
+                onClose={() => { setIsTaskModalOpen(false); setEditingTask(null); }}
                 onSave={handleCreateTask}
-                task={{ status: selectedStatus }}
+                task={editingTask || { status: selectedStatus }}
             />
         </div>
     );

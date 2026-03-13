@@ -30,10 +30,10 @@ const MagicSearch = ({ isOpen, onClose }) => {
 
     const quickActions = [
         { id: 'dash', title: 'Go to Dashboard', icon: LayoutDashboard, path: '/dashboard', color: 'text-blue-500' },
-        { id: 'board', title: 'Open Kanban Board', icon: Trello, path: '/board', color: 'text-purple-500' },
+        { id: 'board', title: 'Open Kanban Board', icon: Trello, path: '/board', color: 'text-sky-500' },
         { id: 'cal', title: 'View Calendar', icon: Calendar, path: '/calendar', color: 'text-pink-500' },
         { id: 'arcade', title: 'Zen Arcade', icon: Gamepad2, path: '/arcade', color: 'text-orange-500' },
-        { id: 'report', title: 'Productivity Report', icon: FileText, path: '/report', color: 'text-indigo-500' },
+        { id: 'report', title: 'Productivity Report', icon: FileText, path: '/report', color: 'text-blue-500' },
         { id: 'help', title: 'Help & FAQ Center', icon: CircleHelp, path: '/help', color: 'text-teal-500' },
         { id: 'logout', title: 'Logout Session', icon: LogOut, action: () => logout(), color: 'text-red-500' },
     ];
@@ -199,11 +199,11 @@ const MagicSearch = ({ isOpen, onClose }) => {
                                                 onMouseEnter={() => setSelectedIndex(idx)}
                                                 onClick={() => handleAction(task)}
                                                 className={`w-full flex items-center gap-4 p-4 rounded-2xl transition-all group ${selectedIndex === idx
-                                                    ? 'bg-indigo-50 dark:bg-indigo-900/20 translate-x-1'
+                                                    ? 'bg-blue-50 dark:bg-blue-900/20 translate-x-1'
                                                     : 'hover:bg-slate-50 dark:hover:bg-slate-800'
                                                     }`}
                                             >
-                                                <div className="p-2.5 rounded-xl bg-white dark:bg-slate-800 shadow-sm text-indigo-500">
+                                                <div className="p-2.5 rounded-xl bg-white dark:bg-slate-800 shadow-sm text-blue-500">
                                                     {task.type === 'faq' ? <CircleHelp size={20} className="text-teal-500" /> : <Clock size={20} />}
                                                 </div>
                                                 <div className="flex-1 text-left">

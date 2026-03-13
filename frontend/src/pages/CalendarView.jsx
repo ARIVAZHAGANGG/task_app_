@@ -21,7 +21,8 @@ import {
     Calendar as CalendarIcon,
     Clock,
     Sparkles,
-    AlertCircle
+    AlertCircle,
+    CheckCircle2
 } from 'lucide-react';
 import TaskModal from '../components/ui/TaskModal';
 import api from '../services/api';
@@ -31,9 +32,22 @@ import { toast } from 'sonner';
 const CalendarView = () => {
     const [currentMonth, setCurrentMonth] = useState(new Date());
     const [tasks, setTasks] = useState([]);
+    const [filteredTasksSummary, setFilteredTasksSummary] = useState([]);
+    const [selectedCategory, setSelectedCategory] = useState("All");
     const [loading, setLoading] = useState(true);
     const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
     const [selectedDate, setSelectedDate] = useState(null);
+    const [viewMode, setViewMode] = useState('monthly');
+
+    // Safe date parsing helper
+    const safeParseISO = (dateStr) => {
+        if (!dateStr || typeof dateStr !== 'string') return new Date(0);
+        try {
+            return parseISO(dateStr);
+        } catch (e) {
+            return new Date(0);
+        }
+    };
 
     useEffect(() => {
         fetchTasks();
@@ -53,10 +67,23 @@ const CalendarView = () => {
         }
     };
 
+    useEffect(() => {
+        let result = tasks;
+        if (selectedCategory !== "All") {
+            result = tasks.filter(t => t.category === selectedCategory);
+        }
+        setFilteredTasksSummary(result);
+    }, [tasks, selectedCategory]);
+
     const handleCreateTask = async (formData) => {
         try {
-            await api.post("/tasks", formData);
-            toast.success("New mission scheduled");
+            if (Array.isArray(formData)) {
+                await Promise.all(formData.map(data => api.post("/tasks", data)));
+                toast.success(`${formData.length} missions scheduled`);
+            } else {
+                await api.post("/tasks", formData);
+                toast.success("New mission scheduled");
+            }
             setIsTaskModalOpen(false);
             fetchTasks();
             window.dispatchEvent(new CustomEvent("refresh-tasks"));
@@ -78,16 +105,16 @@ const CalendarView = () => {
     const renderHeader = () => {
         return (
             <div className="flex items-center justify-between mb-8">
-                <div className="flex items-center gap-4">
-                    <div className="p-3 bg-primary-600 text-white rounded-2xl shadow-lg shadow-primary-500/20">
-                        <CalendarIcon size={24} />
+                <div className="flex items-center gap-6">
+                    <div className="w-16 h-16 bg-white dark:bg-slate-800 rounded-[22px] shadow-sm border border-slate-100 dark:border-slate-800 flex items-center justify-center p-2.5 transition-all hover:shadow-xl hover:shadow-blue-500/10">
+                        <img src="/assets/logo.png" alt="BIT Logo" className="w-10 h-10 object-contain" />
                     </div>
                     <div>
-                        <h1 className="text-3xl font-black text-slate-800 dark:text-white tracking-tight">
+                        <h1 className="text-4xl font-black text-slate-800 dark:text-white tracking-tight leading-none mb-1">
                             {format(currentMonth, 'MMMM yyyy')}
                         </h1>
-                        <p className="text-slate-500 font-bold text-sm uppercase tracking-widest">
-                            {tasks.filter(t => t.dueDate && isSameMonth(parseISO(t.dueDate), currentMonth)).length} Scheduled Events
+                        <p className="text-slate-400 font-bold text-xs uppercase tracking-[0.2em]">
+                            {tasks.filter(t => t.dueDate && isSameMonth(safeParseISO(t.dueDate), currentMonth)).length} Missions in Registry
                         </p>
                     </div>
                 </div>
@@ -110,6 +137,29 @@ const CalendarView = () => {
                     >
                         <ChevronRight size={20} />
                     </button>
+
+                    <div className="w-px h-5 bg-slate-100 dark:bg-slate-800 hidden sm:block mx-1"></div>
+
+                    <div className="flex p-1 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-800">
+                        <button
+                            onClick={() => setViewMode('monthly')}
+                            className={cn(
+                                "px-4 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all",
+                                viewMode === 'monthly' ? "bg-white dark:bg-slate-800 text-primary-600 shadow-sm" : "text-slate-400 hover:text-slate-600"
+                            )}
+                        >
+                            Monthly
+                        </button>
+                        <button
+                            onClick={() => setViewMode('weekly')}
+                            className={cn(
+                                "px-4 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all",
+                                viewMode === 'weekly' ? "bg-white dark:bg-slate-800 text-primary-600 shadow-sm" : "text-slate-400 hover:text-slate-600"
+                            )}
+                        >
+                            Weekly
+                        </button>
+                    </div>
                 </div>
             </div>
         );
@@ -128,6 +178,79 @@ const CalendarView = () => {
         );
     };
 
+    const renderWeeklyCells = () => {
+        const startDate = startOfWeek(currentMonth);
+        const days = Array.from({ length: 7 }, (_, i) => addDays(startDate, i));
+
+        return (
+            <div className="grid grid-cols-7 border-t border-l border-slate-100 dark:border-slate-800 rounded-3xl overflow-hidden shadow-2xl shadow-blue-500/5 bg-white dark:bg-slate-900/40">
+                {days.map((day, i) => {
+                    const dayTasks = tasks.filter(task =>
+                        task.dueDate && isSameDay(safeParseISO(task.dueDate), day)
+                    );
+
+                    return (
+                        <div
+                            key={i}
+                            onClick={() => openCreateModal(day)}
+                            className={cn(
+                                "min-h-[450px] p-5 border-r border-b border-slate-100 dark:border-slate-800 transition-all cursor-pointer hover:bg-slate-50/50 dark:hover:bg-slate-800/20 relative group",
+                                isToday(day) && "bg-rose-50/20 dark:bg-rose-900/5 shadow-inner"
+                            )}
+                        >
+                            {isToday(day) && <div className="absolute top-0 left-0 right-0 h-1 bg-rose-600 shadow-[0_0_15px_rgba(225,29,72,0.4)]" />}
+                            <div className="flex items-center justify-between mb-6">
+                                <div className="flex flex-col">
+                                    <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-1">{format(day, 'EEE')}</span>
+                                    <span className={cn(
+                                        "text-xl font-black w-10 h-10 flex items-center justify-center rounded-xl",
+                                        isToday(day) ? "bg-rose-600 text-white shadow-lg shadow-rose-500/30" : "text-slate-700 dark:text-slate-200"
+                                    )}>
+                                        {format(day, 'd')}
+                                    </span>
+                                </div>
+                                {isToday(day) && <Sparkles size={16} className="text-rose-500 animate-pulse" />}
+                            </div>
+
+                            <div className="space-y-2 overflow-y-auto max-h-[300px] custom-scrollbar">
+                                {dayTasks.map(task => (
+                                    <div
+                                        key={task.id}
+                                        className={cn(
+                                            "p-3 rounded-xl text-xs font-bold border flex flex-col gap-2",
+                                            task.completed
+                                                ? "bg-slate-100 text-slate-400 border-slate-200"
+                                                : task.priority === 'high'
+                                                    ? "bg-rose-50 text-rose-600 border-rose-100 shadow-sm"
+                                                    : "bg-blue-50 text-blue-600 border-blue-100 shadow-sm"
+                                        )}
+                                    >
+                                        <div className="flex items-center gap-2">
+                                            <div className={cn(
+                                                "w-1.5 h-1.5 rounded-full shrink-0",
+                                                task.priority === 'high' ? "bg-rose-500" : "bg-blue-500"
+                                            )} />
+                                            <span className={cn("truncate", task.completed && "line-through")}>{task.title}</span>
+                                        </div>
+                                        <div className="flex items-center justify-between opacity-60">
+                                            <span className="text-[10px] font-black uppercase tracking-tighter">{task.category || 'Mission'}</span>
+                                            <Clock size={10} />
+                                        </div>
+                                    </div>
+                                ))}
+                                {dayTasks.length === 0 && (
+                                    <div className="h-20 border-2 border-dashed border-slate-100 dark:border-slate-800 rounded-2xl flex items-center justify-center opacity-20">
+                                        <Plus size={16} />
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+        );
+    };
+
     const renderCells = () => {
         const monthStart = startOfMonth(currentMonth);
         const monthEnd = endOfMonth(monthStart);
@@ -140,10 +263,10 @@ const CalendarView = () => {
         });
 
         return (
-            <div className="grid grid-cols-7 border-t border-l border-slate-100 dark:border-slate-800 rounded-3xl overflow-hidden shadow-2xl shadow-indigo-500/5 bg-white dark:bg-slate-900/40">
+            <div className="grid grid-cols-7 border-t border-l border-slate-100 dark:border-slate-800 rounded-3xl overflow-hidden shadow-2xl shadow-blue-500/5 bg-white dark:bg-slate-900/40">
                 {days.map((day, i) => {
                     const dayTasks = tasks.filter(task =>
-                        task.dueDate && isSameDay(parseISO(task.dueDate), day)
+                        task.dueDate && isSameDay(safeParseISO(task.dueDate), day)
                     );
 
                     return (
@@ -151,41 +274,48 @@ const CalendarView = () => {
                             key={i}
                             onClick={() => openCreateModal(day)}
                             className={cn(
-                                "min-h-[140px] p-3 border-r border-b border-slate-100 dark:border-slate-800 transition-all cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/30",
-                                !isSameMonth(day, monthStart) ? "bg-slate-50/30 dark:bg-slate-900/20 text-slate-300 dark:text-slate-700" : "text-slate-700 dark:text-slate-200",
-                                isToday(day) && "bg-primary-50/30 dark:bg-primary-900/5 shadow-inner"
+                                "min-h-[160px] p-4 border-r border-b border-slate-100 dark:border-slate-800 transition-all cursor-pointer hover:bg-slate-50/50 dark:hover:bg-slate-800/20 relative group",
+                                !isSameMonth(day, monthStart) ? "bg-slate-50/20 dark:bg-slate-900/20 text-slate-300 dark:text-slate-700" : "text-slate-700 dark:text-slate-200",
+                                isToday(day) && "bg-blue-50/20 dark:bg-blue-900/5"
                             )}
                         >
-                            <div className="flex items-center justify-between mb-2">
+                            {isToday(day) && <div className="absolute top-0 left-0 right-0 h-1 bg-primary-600 shadow-[0_0_10px_rgba(37,99,235,0.3)]" />}
+                            <div className="flex items-center justify-between mb-3">
                                 <span className={cn(
                                     "text-sm font-black w-7 h-7 flex items-center justify-center rounded-lg",
-                                    isToday(day) ? "bg-primary-600 text-white shadow-lg shadow-primary-500/30" : ""
+                                    isToday(day) ? "bg-rose-600 text-white shadow-lg shadow-rose-500/30" : ""
                                 )}>
                                     {format(day, 'd')}
                                 </span>
-                                {isToday(day) && <Sparkles size={12} className="text-primary-500 animate-pulse" />}
+                                {isToday(day) && <Sparkles size={12} className="text-rose-500 animate-pulse" />}
                             </div>
 
                             <div className="space-y-1.5 overflow-y-auto max-h-[100px] custom-scrollbar-hide">
-                                {dayTasks.map(task => (
-                                    <div
-                                        key={task.id}
-                                        className={cn(
-                                            "px-2 py-1 rounded-lg text-[10px] font-bold border truncate flex items-center gap-1.5",
-                                            task.completed
-                                                ? "bg-slate-100 text-slate-400 border-slate-200 line-through"
-                                                : task.priority === 'high'
-                                                    ? "bg-rose-50 text-rose-600 border-rose-100"
-                                                    : "bg-indigo-50 text-indigo-600 border-indigo-100"
-                                        )}
-                                    >
-                                        <div className={cn(
-                                            "w-1 h-1 rounded-full shrink-0",
-                                            task.priority === 'high' ? "bg-rose-500" : "bg-indigo-500"
-                                        )} />
-                                        {task.title}
-                                    </div>
-                                ))}
+                                {dayTasks
+                                    .filter(t => selectedCategory === "All" || t.category === selectedCategory)
+                                    .map(task => (
+                                        <div
+                                            key={task.id}
+                                            className={cn(
+                                                "px-2 py-1 rounded-lg text-[10px] font-bold border truncate flex items-center gap-1.5 shadow-sm",
+                                                task.completed
+                                                    ? "bg-slate-100 text-slate-400 border-slate-200 line-through"
+                                                    : task.category === 'Work' ? "bg-blue-50 text-blue-600 border-blue-100"
+                                                    : task.category === 'Personal' ? "bg-emerald-50 text-emerald-600 border-emerald-100"
+                                                    : task.category === 'Study' ? "bg-indigo-50 text-indigo-600 border-indigo-100"
+                                                    : task.category === 'Coding' ? "bg-amber-50 text-amber-600 border-amber-100"
+                                                    : task.category === 'Health' ? "bg-rose-50 text-rose-600 border-rose-100"
+                                                    : task.category === 'Home' ? "bg-teal-50 text-teal-600 border-teal-100"
+                                                    : "bg-blue-50 text-blue-600 border-blue-100"
+                                            )}
+                                        >
+                                            <div className={cn(
+                                                "w-1 h-1 rounded-full shrink-0",
+                                                task.priority === 'high' ? "bg-rose-500" : "bg-blue-500"
+                                            )} />
+                                            {task.title}
+                                        </div>
+                                    ))}
                             </div>
 
                             {!isSameMonth(day, monthStart) && dayTasks.length > 0 && (
@@ -201,45 +331,131 @@ const CalendarView = () => {
     };
 
     return (
-        <div className="p-8 max-w-[1600px] mx-auto animate-slide-up">
-            <div className="saas-card p-10 bg-white dark:bg-slate-900/50 border-slate-100 dark:border-slate-800/50">
-                {renderHeader()}
-                {renderDays()}
-                {renderCells()}
-            </div>
-
-            <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="saas-card p-6 flex items-center gap-4 bg-primary-600 text-white border-none">
-                    <div className="p-3 bg-white/20 rounded-2xl">
-                        <Clock size={24} />
-                    </div>
-                    <div>
-                        <p className="text-[10px] font-black uppercase tracking-widest opacity-80">Next Deadline</p>
-                        <h4 className="text-lg font-black truncate">
-                            {tasks.find(t => t.dueDate && !t.completed)?.title || "No pending tasks"}
-                        </h4>
+        <div className="p-8 max-w-[1600px] mx-auto animate-slide-up h-full flex flex-col gap-8">
+            <div className="flex flex-col lg:flex-row gap-8 flex-1 min-h-0">
+                {/* Main Calendar Section */}
+                <div className="flex-1 saas-card p-10 bg-white dark:bg-slate-900/50 border-slate-100 dark:border-slate-800/50 shadow-2xl flex flex-col">
+                    {renderHeader()}
+                    {renderDays()}
+                    <div className="flex-1">
+                        {viewMode === 'monthly' ? renderCells() : renderWeeklyCells()}
                     </div>
                 </div>
 
-                <div className="saas-card p-6 flex items-center gap-4">
-                    <div className="p-3 bg-rose-500/10 text-rose-600 rounded-2xl">
-                        <AlertCircle size={24} />
+                {/* Right Side Agenda Panel */}
+                <div className="w-full lg:w-96 flex flex-col gap-6">
+                    <div className="saas-card p-8 bg-rose-950/90 dark:bg-rose-950 border-none relative overflow-hidden group h-fit">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-rose-500/20 rounded-full -mr-16 -mt-16 blur-2xl font-bold" />
+                        <div className="relative z-10">
+                            <div className="mb-6">
+                                <h3 className="text-xl font-black text-rose-50 flex items-center gap-3 mb-1">
+                                    <Sparkles className="text-rose-400" size={20} />
+                                    Today's Agenda
+                                </h3>
+                                <div className="flex items-center justify-between">
+                                    <p className="text-rose-300 text-[10px] font-bold uppercase tracking-widest">
+                                        {format(new Date(), 'EEEE, d MMMM yyyy')}
+                                    </p>
+                                    <div className="px-2 py-0.5 bg-rose-500 text-white rounded-full text-[9px] font-black tracking-widest uppercase shadow-sm">
+                                        {filteredTasksSummary.filter(t => t.dueDate && isSameDay(safeParseISO(t.dueDate), new Date())).length} Tasks
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="space-y-4 max-h-[400px] overflow-y-auto custom-scrollbar-hide">
+                                {filteredTasksSummary.filter(t => t.dueDate && isSameDay(safeParseISO(t.dueDate), new Date())).length > 0 ? (
+                                    filteredTasksSummary.filter(t => t.dueDate && isSameDay(safeParseISO(t.dueDate), new Date())).map(task => (
+                                        <div key={task.id} className="p-4 bg-white/10 rounded-2xl border border-white/10 flex flex-col gap-2 hover:bg-white/20 transition-colors">
+                                            <div className="flex items-center gap-2">
+                                                <div className={cn("w-2 h-2 rounded-full", task.priority === 'high' ? "bg-rose-400" : "bg-blue-400")} />
+                                                <span className="text-white font-bold text-sm truncate">{task.title}</span>
+                                            </div>
+                                            <div className="flex items-center justify-between text-[10px] text-rose-200 font-bold uppercase tracking-widest">
+                                                <span>{task.category || 'Mission'}</span>
+                                                <div className="flex flex-col items-end gap-1">
+                                                    <div className="flex items-center gap-1.5">
+                                                        {task.dueDate && <span className="text-rose-100">{format(safeParseISO(task.dueDate), 'HH:mm')}</span>}
+                                                        <span className="text-rose-400 mx-0.5">-</span>
+                                                        {task.dueDate && (
+                                                            <span className="text-emerald-400">
+                                                                {format(new Date(safeParseISO(task.dueDate).getTime() + (task.estimatedTime || 60) * 60000), 'HH:mm')}
+                                                            </span>
+                                                        )}
+                                                        <Clock size={10} className="text-rose-200 ml-1" />
+                                                    </div>
+                                                    {task.createdAt && (
+                                                        <span className="text-[8px] text-slate-500 font-medium lowercase">
+                                                            created {format(safeParseISO(task.createdAt), 'HH:mm')}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div className="py-10 text-center">
+                                        <p className="text-rose-300 font-bold text-xs uppercase tracking-widest">No missions today</p>
+                                    </div>
+                                )}
+                            </div>
+                            <button
+                                onClick={() => openCreateModal(new Date())}
+                                className="w-full mt-6 py-4 bg-white text-rose-900 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-xl hover:bg-rose-50 active:scale-95 transition-all"
+                            >
+                                Add Today's Goal
+                            </button>
+                        </div>
                     </div>
-                    <div>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Overdue Tasks</p>
-                        <h4 className="text-lg font-black text-slate-800 dark:text-white">
-                            {tasks.filter(t => t.dueDate && new Date(t.dueDate) < new Date() && !t.completed).length}
-                        </h4>
+
+                    <div className="saas-card p-8 bg-white dark:bg-slate-900/50 border-slate-100 dark:border-slate-800/50 h-fit">
+                        <h3 className="text-lg font-black text-slate-800 dark:text-white mb-6 uppercase tracking-widest text-xs">Categories</h3>
+                        <div className="flex flex-wrap gap-2">
+                            {[
+                                { name: "All", color: "bg-slate-100 text-slate-600 border-slate-200 active:bg-slate-900 active:text-white" },
+                                { name: "Work", color: "bg-blue-50 text-blue-600 border-blue-100 active:bg-blue-600 active:text-white" },
+                                { name: "Personal", color: "bg-emerald-50 text-emerald-600 border-emerald-100 active:bg-emerald-600 active:text-white" },
+                                { name: "Study", color: "bg-indigo-50 text-indigo-600 border-indigo-100 active:bg-indigo-600 active:text-white" },
+                                { name: "Coding", color: "bg-amber-50 text-amber-600 border-amber-100 active:bg-amber-600 active:text-white" },
+                                { name: "Health", color: "bg-rose-50 text-rose-600 border-rose-100 active:bg-rose-600 active:text-white" },
+                                { name: "Home", color: "bg-teal-50 text-teal-600 border-teal-100 active:bg-teal-600 active:text-white" }
+                            ].map(cat => (
+                                <button
+                                    key={cat.name}
+                                    onClick={() => setSelectedCategory(cat.name)}
+                                    className={cn(
+                                        "px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border shadow-sm",
+                                        selectedCategory === cat.name
+                                            ? cat.color.split(" active:")[1].replace("active:", "") // Use active colors for selected
+                                            : cat.color.split(" active:")[0] // Use base colors for unselected
+                                    )}
+                                >
+                                    {cat.name}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="saas-card p-8 bg-white dark:bg-slate-900/50 border-slate-100 dark:border-slate-800/50">
+                        <h3 className="text-lg font-black text-slate-800 dark:text-white mb-6 uppercase tracking-widest text-xs">Mission Intel</h3>
+                        <div className="space-y-6">
+                            <div className="flex items-center justify-between">
+                                <span className="text-slate-500 text-xs font-bold uppercase tracking-widest">Total Active</span>
+                                <span className="text-xl font-black text-slate-900 dark:text-white">{filteredTasksSummary.filter(t => !t.completed).length}</span>
+                            </div>
+                            <div className="flex items-center justify-between font-medium">
+                                <span className="text-rose-500 text-xs font-bold uppercase tracking-widest flex items-center gap-2">
+                                    <AlertCircle size={14} /> Overdue
+                                </span>
+                                <span className="text-xl font-black text-rose-600">{filteredTasksSummary.filter(t => t.dueDate && !t.completed && new Date(t.dueDate) < new Date()).length}</span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <span className="text-emerald-500 text-xs font-bold uppercase tracking-widest flex items-center gap-2">
+                                    <CheckCircle2 size={14} className="text-emerald-500" /> Done
+                                </span>
+                                <span className="text-xl font-black text-emerald-600">{filteredTasksSummary.filter(t => t.completed).length}</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
-
-                <button
-                    onClick={() => openCreateModal()}
-                    className="saas-card p-6 flex items-center justify-center gap-3 border-dashed border-2 hover:border-primary-500 hover:text-primary-600 transition-all text-slate-400 group"
-                >
-                    <Plus size={24} className="group-hover:rotate-90 transition-transform" />
-                    <span className="font-black uppercase tracking-widest text-sm">Schedule New Mission</span>
-                </button>
             </div>
 
             <TaskModal

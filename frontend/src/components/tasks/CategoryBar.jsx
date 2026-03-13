@@ -35,9 +35,9 @@ const categoryThemes = {
         icon: "text-blue-500"
     },
     Work: {
-        active: "bg-indigo-600 border-indigo-600 text-white shadow-indigo-200",
-        inactive: "bg-indigo-50 border-indigo-100 text-indigo-600 hover:bg-indigo-100 dark:bg-indigo-900/20 dark:border-indigo-800/30 dark:text-indigo-400",
-        icon: "text-indigo-500"
+        active: "bg-blue-600 border-blue-600 text-white shadow-blue-200",
+        inactive: "bg-blue-50 border-blue-100 text-blue-600 hover:bg-blue-100 dark:bg-blue-900/20 dark:border-blue-800/30 dark:text-blue-400",
+        icon: "text-blue-500"
     },
     Home: {
         active: "bg-emerald-600 border-emerald-600 text-white shadow-emerald-200",

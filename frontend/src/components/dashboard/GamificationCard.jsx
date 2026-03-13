@@ -35,7 +35,7 @@ const GamificationCard = () => {
             className="saas-card p-6 relative overflow-hidden group"
         >
             {/* Background Decoration */}
-            <div className="absolute -right-8 -top-8 w-32 h-32 bg-indigo-500/5 rounded-full blur-3xl group-hover:bg-indigo-500/10 transition-colors" />
+            <div className="absolute -right-8 -top-8 w-32 h-32 bg-blue-500/5 rounded-full blur-3xl group-hover:bg-blue-500/10 transition-colors" />
 
             <div className="relative z-10">
                 <div className="flex items-center justify-between mb-6">
@@ -49,7 +49,7 @@ const GamificationCard = () => {
                         </div>
                     </div>
                     <div className="flex flex-col items-end">
-                        <span className="text-2xl font-black text-indigo-600 dark:text-indigo-400">{stats.points}</span>
+                        <span className="text-2xl font-black text-blue-600 dark:text-blue-400">{stats.points}</span>
                         <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total XP</span>
                     </div>
                 </div>
@@ -80,7 +80,7 @@ const GamificationCard = () => {
                         <p className="text-lg font-black text-slate-800 dark:text-white">{stats.streak} Days</p>
                     </div>
                     <div className="bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl border border-slate-100 dark:border-slate-700/50">
-                        <div className="flex items-center gap-2 text-indigo-500 mb-1">
+                        <div className="flex items-center gap-2 text-blue-500 mb-1">
                             <Award size={14} strokeWidth={3} />
                             <span className="text-[10px] font-black uppercase tracking-widest">Badges</span>
                         </div>

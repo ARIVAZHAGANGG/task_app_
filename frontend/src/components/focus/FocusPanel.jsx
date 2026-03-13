@@ -123,7 +123,7 @@ const FocusPanel = () => {
                         onClick={toggleTimer}
                         className={`w-20 h-20 rounded-2xl flex items-center justify-center shadow-xl transition-all duration-300 ${isActive
                             ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 overflow-hidden'
-                            : 'saas-gradient text-white shadow-indigo-500/20'
+                            : 'saas-gradient text-white shadow-blue-500/20'
                             }`}
                     >
                         {isActive ? <Pause size={32} fill="currentColor" /> : <Play size={32} fill="currentColor" className="ml-1" />}

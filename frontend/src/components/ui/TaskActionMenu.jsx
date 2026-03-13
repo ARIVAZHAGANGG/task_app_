@@ -52,7 +52,7 @@ const TaskActionMenu = ({
         blue: 'text-blue-600 bg-blue-50 dark:bg-blue-500/10',
         slate: 'text-slate-600 bg-slate-50 dark:bg-slate-500/10',
         orange: 'text-orange-600 bg-orange-50 dark:bg-orange-500/10',
-        indigo: 'text-indigo-600 bg-indigo-50 dark:bg-indigo-500/10',
+        indigo: 'text-blue-600 bg-blue-50 dark:bg-blue-500/10',
         violet: 'text-violet-600 bg-violet-50 dark:bg-violet-500/10',
         red: 'text-red-600 bg-red-50 dark:bg-red-500/10',
     };

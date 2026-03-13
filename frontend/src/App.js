@@ -29,7 +29,6 @@ import MainLayout from "./components/MainLayout";
 // Lazy load heavy components for better initial load time
 const Analytics = lazy(() => import("./pages/Analytics"));
 const HelpCenter = lazy(() => import("./pages/HelpCenter"));
-const KanbanBoard = lazy(() => import("./pages/KanbanBoard"));
 
 // Loading fallback component
 const OfflineBanner = () => {

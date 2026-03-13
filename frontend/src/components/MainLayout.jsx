@@ -3,14 +3,9 @@ import { useAuth } from "../context/AuthContext";
 import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
 import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
 import SupportAssistant from "./support/SupportAssistant";
-import { useState } from "react";
-import TaskModal from "./ui/TaskModal";
-import api from "../services/api";
-import { toast } from "sonner";
-import { Plus } from "lucide-react";
-import MagicSearch from "./ui/MagicSearch";
-import { useEffect } from "react";
+import VoiceAssistant from "./ui/VoiceAssistant";
 
 const MainLayout = () => {
     const { user, loading } = useAuth();
@@ -43,8 +38,13 @@ const MainLayout = () => {
 
     const handleCreateTask = async (formData) => {
         try {
-            await api.post("/tasks", formData);
-            toast.success("New task created");
+            if (Array.isArray(formData)) {
+                await Promise.all(formData.map(data => api.post("/tasks", data)));
+                toast.success(`${formData.length} tasks launched!`);
+            } else {
+                await api.post("/tasks", formData);
+                toast.success("New task created");
+            }
             setIsTaskModalOpen(false);
             // Dispatch event to refresh tasks in Tasks.jsx
             window.dispatchEvent(new CustomEvent("refresh-tasks"));
@@ -75,7 +75,7 @@ const MainLayout = () => {
             {/* Mobile FAB */}
             <button
                 onClick={() => setIsTaskModalOpen(true)}
-                className="md:hidden fixed bottom-6 right-6 w-14 h-14 bg-indigo-600 text-white rounded-2xl shadow-2xl flex items-center justify-center z-50 active:scale-90 transition-all border-4 border-white dark:border-slate-900"
+                className="md:hidden fixed bottom-6 right-6 w-14 h-14 bg-blue-600 text-white rounded-2xl shadow-2xl flex items-center justify-center z-50 active:scale-90 transition-all border-4 border-white dark:border-slate-900"
             >
                 <Plus size={24} strokeWidth={3} />
             </button>
@@ -90,6 +90,11 @@ const MainLayout = () => {
                 isOpen={isMagicSearchOpen}
                 onClose={() => setIsMagicSearchOpen(false)}
             />
+
+            <VoiceAssistant />
+        </div>
+    );
+};
         </div>
     );
 };

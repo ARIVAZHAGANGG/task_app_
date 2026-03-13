@@ -32,13 +32,9 @@ const Sidebar = () => {
     const menuItems = [
         { name: "Dashboard", icon: LayoutDashboard, path: "/" },
         { name: "My Day", icon: Sun, path: "/my-day" },
-        { name: "Focus Mode", icon: Target, path: "/focus" },
-        { name: "Kanban Board", icon: Columns, path: "/board" },
+        { name: "Task List", icon: Columns, path: "/board" },
         { name: "Calendar", icon: CalendarIcon, path: "/calendar" },
-        { name: "Time Tracking", icon: Clock, path: "/time-tracking" },
-        { name: "Invoices", icon: FileText, path: "/invoices" },
         { name: "Productivity", icon: BarChart3, path: "/report" },
-        { name: "Zen Arcade", icon: Gamepad2, path: "/arcade" },
         { name: "Important", icon: Star, path: "/important" },
         { name: "Completed", icon: CheckCircle2, path: "/completed" },
     ];
@@ -49,21 +45,23 @@ const Sidebar = () => {
             className="h-screen border-r border-slate-200/80 dark:border-slate-800/80 shadow-[1px_0_10px_rgba(0,0,0,0.02)] flex flex-col transition-all duration-300 ease-in-out z-50 sticky top-0 overflow-hidden"
         >
             {/* Header / Logo (Fixed) */}
-            <div className="p-4 flex items-center justify-between h-20 shrink-0 border-b border-slate-50 dark:border-slate-800/20">
+            <div className="p-6 flex items-center justify-between h-24 shrink-0">
                 {!isCollapsed && (
-                    <div className="flex items-center gap-3 px-2 transition-opacity duration-200">
-                        <Logo className="w-8 h-8 rounded-lg shadow-sm" />
-                        <span className="font-bold text-slate-900 dark:text-white tracking-tight text-lg">ZenTask</span>
+                    <div className="flex items-center gap-4 transition-opacity duration-200">
+                        <div className="w-10 h-10 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-50 dark:border-slate-700 flex items-center justify-center p-1.5">
+                            <img src="/assets/logo.png" alt="ZenTask" className="w-full h-full object-contain" />
+                        </div>
+                        <span className="font-bold text-slate-900 dark:text-white tracking-tight text-xl font-serif">ZenTask</span>
                     </div>
                 )}
                 <button
                     onClick={() => setIsCollapsed(!isCollapsed)}
                     className={cn(
-                        "p-2 rounded-xl text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors",
+                        "p-2.5 rounded-xl text-slate-400 hover:bg-slate-50 transition-colors",
                         isCollapsed && "mx-auto"
                     )}
                 >
-                    {isCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+                    {isCollapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
                 </button>
             </div>
 
@@ -81,11 +79,11 @@ const Sidebar = () => {
                         className={({ isActive }) => cn(
                             "flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group relative text-sm font-semibold",
                             isActive
-                                ? "text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/10 shadow-sm ring-1 ring-indigo-500/10"
+                                ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/10 shadow-sm ring-1 ring-blue-500/10"
                                 : "text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200"
                         )}
                     >
-                        <item.icon size={18} className={cn("shrink-0 transition-transform group-hover:scale-110", location.pathname === item.path && "text-indigo-600 dark:text-indigo-400")} />
+                        <item.icon size={18} className={cn("shrink-0 transition-transform group-hover:scale-110", location.pathname === item.path && "text-blue-600 dark:text-blue-400")} />
                         {!isCollapsed && <span>{item.name}</span>}
 
                         {isCollapsed && (
@@ -110,7 +108,7 @@ const Sidebar = () => {
                         className={({ isActive }) => cn(
                             "flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group relative text-sm font-semibold w-full",
                             isActive
-                                ? "text-indigo-600 dark:text-indigo-400 bg-white dark:bg-slate-800 shadow-sm ring-1 ring-indigo-500/10"
+                                ? "text-blue-600 dark:text-blue-400 bg-white dark:bg-slate-800 shadow-sm ring-1 ring-blue-500/10"
                                 : "text-slate-500 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200"
                         )}
                     >
@@ -130,7 +128,7 @@ const Sidebar = () => {
                         className={({ isActive }) => cn(
                             "flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group relative text-sm font-semibold w-full",
                             isActive
-                                ? "text-indigo-600 dark:text-indigo-400 bg-white dark:bg-slate-800 shadow-sm ring-1 ring-indigo-500/10"
+                                ? "text-blue-600 dark:text-blue-400 bg-white dark:bg-slate-800 shadow-sm ring-1 ring-blue-500/10"
                                 : "text-slate-500 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200"
                         )}
                     >
@@ -159,17 +157,6 @@ const Sidebar = () => {
                         )}
                     </button>
 
-                    {/* Profile Summary (Only if not collapsed) */}
-                    {!isCollapsed && (
-                        <div className="px-3 py-3 flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg saas-gradient text-white flex items-center justify-center text-[10px] font-black shrink-0 shadow-md">
-                                {user?.name?.charAt(0).toUpperCase() || "U"}
-                            </div>
-                            <div className="min-w-0">
-                                <p className="text-xs font-bold text-slate-800 dark:text-slate-200 truncate">{user?.name}</p>
-                            </div>
-                        </div>
-                    )}
                 </div>
             </div>
 

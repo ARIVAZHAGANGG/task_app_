@@ -9,7 +9,6 @@ import useReminder from "../hooks/useReminder";
 import { useSearch } from "../context/SearchContext";
 import CategoryBar from "../components/tasks/CategoryBar";
 import SelectionToolbar from "../components/ui/SelectionToolbar";
-import VoiceTaskTrigger from "../components/tasks/VoiceTaskTrigger";
 
 const Tasks = ({ filter = "all" }) => {
     const [tasks, setTasks] = useState([]);
@@ -75,6 +74,9 @@ const Tasks = ({ filter = "all" }) => {
             if (id) {
                 await api.put(`/tasks/${id}`, formData);
                 toast.success("Task updated successfully");
+            } else if (Array.isArray(formData)) {
+                await Promise.all(formData.map(data => api.post("/tasks", data)));
+                toast.success(`${formData.length} tasks created!`);
             } else {
                 await api.post("/tasks", formData);
                 toast.success("New task created");
@@ -310,7 +312,7 @@ const Tasks = ({ filter = "all" }) => {
         <div className="max-w-6xl mx-auto px-2 sm:px-4 pb-20 overflow-x-hidden">
             <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center gap-3">
-                    <span className="px-3 py-1 bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 rounded-lg text-[10px] font-black uppercase tracking-wider">
+                    <span className="px-3 py-1 bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 rounded-lg text-[10px] font-black uppercase tracking-wider">
                         {filteredTasks.filter(t => !t.completed).length} Pending
                     </span>
                     <span className="text-slate-400 dark:text-slate-500 text-[10px] font-bold uppercase tracking-wider">
@@ -362,8 +364,6 @@ const Tasks = ({ filter = "all" }) => {
                 onSave={handleCreateOrUpdate}
                 task={selectedTask}
             />
-
-            <VoiceTaskTrigger />
         </div>
     );
 };

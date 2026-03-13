@@ -23,42 +23,42 @@ const HelpCenter = () => {
 
     const categories = [
         { id: 'all', name: 'All Topics', icon: Book },
-        { id: 'tasks', name: 'Tasks & Planning', icon: CheckCircle2 },
-        { id: 'gamification', name: 'Leveling & XP', icon: Sparkles },
-        { id: 'arcade', name: 'Zen Arcade', icon: Gamepad2 },
-        { id: 'security', name: 'Security & Account', icon: Shield },
+        { id: 'tasks', name: 'Task Management', icon: CheckCircle2 },
+        { id: 'dashboard', name: 'Dashboard & Stats', icon: BarChart3 },
+        { id: 'settings', name: 'App Settings', icon: Settings },
+        { id: 'security', name: 'Security & Privacy', icon: Shield },
     ];
 
     const faqs = [
         {
             category: 'tasks',
-            q: "How do I create a new project/mission?",
-            a: "Press '+' in the sidebar or just hit 'C' on your keyboard. You can also use the Magic Search (Ctrl + K) and type 'Create' to trigger the modal instantly."
+            q: "How do I manage my Task List?",
+            a: "Go to the 'Task List' in the sidebar. You can drag and drop missions between columns (To Do, In Progress, Done) to keep your workflow organized."
         },
         {
-            category: 'gamification',
+            category: 'dashboard',
             q: "How is my Productivity Score calculated?",
-            a: "Your score is a blend of task completion rate, streak maintenance, and focus frequency. Completing 'High' priority missions gives a larger boost to your score."
+            a: "Your score is based on your task completion rate and consistency. Finishing high-priority tasks on time gives your score a significant boost."
         },
         {
-            category: 'arcade',
-            q: "Can I earn real XP from games?",
-            a: "Yes! 10% of your Zen Arcade game score is converted directly into XP for your main level. It's the perfect way to build focus while taking a small break."
+            category: 'dashboard',
+            q: "What does the 'Efficiency Index' mean?",
+            a: "The Efficiency Index measures how quickly you complete tasks compared to your scheduled deadlines. A higher percentage means you're operating at peak performance."
         },
         {
             category: 'tasks',
-            q: "What are 'Zen Sparkles' in the calendar?",
-            a: "Sparkles indicate your current day's focus. It highlights tasks due today to ensure you maintain your productivity streak."
+            q: "How do I use the Weekly view in Calendar?",
+            a: "Open the Calendar and use the toggle at the top right to switch between Monthly and Weekly views. The weekly view helps you focus on your immediate schedule."
         },
         {
             category: 'security',
-            q: "Is my task data private?",
+            q: "Is my task data private and secure?",
             a: "Absolutely. ZenTask uses enterprise-grade encryption for all mission data. Only you have access to your tactical productivity workspace."
         },
         {
-            category: 'gamification',
-            q: "How do I level up faster?",
-            a: "Use Focus Mode! Completing a 25-minute Pomodoro session awards a massive +50 XP bonus, which is 5x more than a standard task completion."
+            category: 'settings',
+            q: "How do I change the application theme?",
+            a: "Click on the theme icon (Sun/Moon) in the top Navbar or Sidebar. You can choose between Light, Dark, and AMOLED modes to suit your workspace environment."
         }
     ];
 
@@ -86,7 +86,7 @@ const HelpCenter = () => {
                         <h1 className="text-5xl font-black text-slate-900 dark:text-white tracking-tight mb-4">
                             How can we <span className="text-primary-600">Help?</span>
                         </h1>
-                        <p className="text-lg text-slate-500 font-medium max-w-xl">
+                        <p className="text-lg text-slate-600 dark:text-slate-300 font-medium max-w-xl">
                             Search our tactical documentation or browse categories to master your ZenTask workspace.
                         </p>
                     </div>
@@ -142,7 +142,7 @@ const HelpCenter = () => {
                                 <h3 className="text-xl font-black text-slate-800 dark:text-white mb-4 leading-tight group-hover:text-primary-600 transition-colors">
                                     {faq.q}
                                 </h3>
-                                <p className="text-slate-500 dark:text-slate-400 font-medium leading-relaxed">
+                                <p className="text-slate-600 dark:text-slate-300 font-medium leading-relaxed">
                                     {faq.a}
                                 </p>
                             </motion.div>
@@ -158,15 +158,15 @@ const HelpCenter = () => {
             </div>
 
             {/* Footer Support */}
-            <div className="max-w-5xl mx-auto bg-primary-600 rounded-[2.5rem] p-10 md:p-16 flex flex-col md:flex-row items-center justify-between gap-10 overflow-hidden relative shadow-2xl shadow-primary-600/30">
-                <div className="absolute top-0 right-0 p-20 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl lg:block hidden"></div>
+            <div className="max-w-5xl mx-auto bg-slate-900 dark:bg-primary-600 rounded-[2.5rem] p-10 md:p-16 flex flex-col md:flex-row items-center justify-between gap-10 overflow-hidden relative shadow-2xl shadow-primary-500/10">
+                <div className="absolute top-0 right-0 p-20 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl lg:block hidden"></div>
                 <div className="relative z-10 text-center md:text-left">
                     <h2 className="text-3xl md:text-4xl font-black text-white mb-4">Still need tactical support?</h2>
-                    <p className="text-white/80 font-bold text-lg max-w-md">
+                    <p className="text-slate-300 dark:text-white/80 font-bold text-lg max-w-md">
                         Our intelligence unit is always ready to assist you with complex mission planning.
                     </p>
                 </div>
-                <button className="relative z-10 bg-white text-primary-600 px-10 py-5 rounded-2xl font-black text-lg shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center gap-3">
+                <button className="relative z-10 bg-white dark:bg-slate-900 text-slate-900 dark:text-white px-10 py-5 rounded-2xl font-black text-lg shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center gap-3">
                     Contact Commander
                     <ChevronRight size={20} />
                 </button>
